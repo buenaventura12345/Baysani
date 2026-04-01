@@ -221,12 +221,12 @@
         <div class="otp-block" id="otpBlock">
           <div class="otp-sent-msg">📲 Code gestuurd naar je WhatsApp!</div>
           <div class="otp-row">
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpBack(event,0)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpBack(event,1)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpBack(event,2)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpBack(event,3)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpBack(event,4)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpBack(event,5)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,0);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,0)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,1);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,1)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,2);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,2)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,3);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,3)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,4);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,4)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,5);this.style.color='#000';this.style.webkitTextFillColor='#000';" onkeydown="otpBack(event,5)" style="color:#000;-webkit-text-fill-color:#000;background:#fff;opacity:1;"/>
           </div>
           <div class="otp-resend">
             <span style="color:var(--muted)">Geen code ontvangen?</span>
@@ -677,6 +677,20 @@ setInterval(function(){
   var el = document.getElementById('liveCount');
   if(el) el.textContent = liveBase;
 }, 3500);
+
+// FORCE OTP COLORS
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.otp-digit').forEach(function(inp) {
+    inp.style.color = '#000000';
+    inp.style.webkitTextFillColor = '#000000';
+    inp.style.background = '#ffffff';
+    inp.style.opacity = '1';
+    inp.addEventListener('input', function() {
+      this.style.color = '#000000';
+      this.style.webkitTextFillColor = '#000000';
+    });
+  });
+});
 
 // MICRO-REWARDS
 document.querySelectorAll('input').forEach(function(inp){

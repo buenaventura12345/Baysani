@@ -245,12 +245,12 @@
   <div class="nav-inner">
     <a href="index.html" class="logo">Bay<em>Sani</em><span>.com</span></a>
     <div class="search-wrap">
-      <input type="text" placeholder="Zoek in heel Suriname..."/>
-      <button>🔍</button>
+      <input type="text" placeholder="Zoek in heel Suriname..." id="search-input" onkeydown="if(event.key==='Enter')window.location.href='index.html'"/>
+      <button onclick="window.location.href='index.html'">🔍</button>
     </div>
     <div class="nav-actions">
-      <a href="#" class="nav-btn"><span class="icon">👤</span><span>Inloggen</span></a>
-      <a href="#" class="nav-btn"><span class="icon cart-icon" data-count="0" id="cart-icon">🛒</span><span>Winkelwagen</span></a>
+      <a href="baysani_login.html" class="nav-btn"><span class="icon">👤</span><span>Inloggen</span></a>
+      <a href="baysani_checkout.html" class="nav-btn"><span class="icon cart-icon" data-count="0" id="cart-icon">🛒</span><span>Winkelwagen</span></a>
     </div>
   </div>
 </nav>
@@ -542,11 +542,11 @@
   <div class="related-section">
     <div class="section-title">Vergelijkbare producten</div>
     <div class="related-grid">
-      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Nike Air Force 1 — Wit</div><div class="rel-price">SRD 720</div></div></div>
-      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Adidas Stan Smith</div><div class="rel-price">SRD 680</div></div></div>
-      <div class="rel-card"><div class="rel-img">🥿</div><div class="rel-body"><div class="rel-shop">🏪 Bags & More</div><div class="rel-name">Puma Suede Classic</div><div class="rel-price">SRD 540</div></div></div>
-      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">New Balance 574</div><div class="rel-price">SRD 760</div></div></div>
-      <div class="rel-card"><div class="rel-img">🥾</div><div class="rel-body"><div class="rel-shop">🏪 OutdoorSuri</div><div class="rel-name">Timberland 6-Inch Boot</div><div class="rel-price">SRD 1.200</div></div></div>
+      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Nike Air Force 1 — Wit</div><div class="rel-price">SRD 720</div></div></div>
+      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Adidas Stan Smith</div><div class="rel-price">SRD 680</div></div></div>
+      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">🥿</div><div class="rel-body"><div class="rel-shop">🏪 Bags & More</div><div class="rel-name">Puma Suede Classic</div><div class="rel-price">SRD 540</div></div></div>
+      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">New Balance 574</div><div class="rel-price">SRD 760</div></div></div>
+      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">🥾</div><div class="rel-body"><div class="rel-shop">🏪 OutdoorSuri</div><div class="rel-name">Timberland 6-Inch Boot</div><div class="rel-price">SRD 1.200</div></div></div>
     </div>
   </div>
 
@@ -643,7 +643,7 @@ function addToCart(btn) {
 }
 
 function buyNow() {
-  window.location.href = 'checkout.html';
+  window.location.href = 'baysani_checkout.html';
 }
 
 function toggleWish(btn) {

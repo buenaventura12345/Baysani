@@ -562,11 +562,30 @@ var BASE = 'https://jwctzyddaxweavqrttqr.supabase.co/rest/v1';
 var KEY  = 'sb_publishable_WFWd1ia-e2pwrpSt_IZ3xw_EO5CCb_s';
 
 // ── LAAD PRODUCT UIT DATABASE ──
+// Demo producten data
+var DEMO_PRODUCTS = {
+  'demo-1': {name:'Nike Air Max 270 — Zwart/Wit', brand:'SportZone PBX', base_price:1050, sale_price:850, description:'De Nike Air Max 270 combineert stijl en comfort. Met de grootste Air-eenheid in een lifestyle sneaker.', stock_total:7, rating:4.8, sold_count:124},
+  'demo-2': {name:'Samsung Galaxy A54 128GB', brand:'TechWorld Suriname', base_price:3600, sale_price:3200, description:'Samsung Galaxy A54 met 128GB opslag, 50MP camera en lange batterijduur.', stock_total:15, rating:4.6, sold_count:89},
+  'demo-3': {name:'Zomerjurk Bloemenprint', brand:'Modepaleis Nickerie', base_price:225, sale_price:180, description:'Vrolijke zomerjurk met bloemenprint. Luchtig en comfortabel voor warm weer.', stock_total:5, rating:4.9, sold_count:203},
+  'demo-4': {name:'Basmati Rijst 5kg', brand:'Kersten & Co', base_price:95, sale_price:null, description:'Premium Basmati rijst, 5kg verpakking. Lekker geurig en luchtig na koken.', stock_total:50, rating:4.5, sold_count:45},
+  'demo-5': {name:'Fenty Beauty Foundation 30ml', brand:'Beauty Palace PBX', base_price:420, sale_price:null, description:'Fenty Beauty Pro Filt'r foundation. Volledige dekking, matte finish.', stock_total:12, rating:4.7, sold_count:67},
+  'demo-6': {name:'Boormachine 750W Slagboormachine', brand:'Bouwmarkt Wanica', base_price:800, sale_price:650, description:'Krachtige 750W slagboormachine voor alle boorwerk. Inclusief accessoires.', stock_total:8, rating:4.4, sold_count:31},
+  'demo-7': {name:'Bamboe Vloerkleed 160x230cm', brand:'Home & Living Suriname', base_price:1100, sale_price:null, description:'Duurzaam bamboe vloerkleed, 160x230cm. Geschikt voor woonkamer en slaapkamer.', stock_total:20, rating:4.6, sold_count:18},
+  'demo-8': {name:'Leren Rugtas Donkerbruin', brand:'Bags & More PBX', base_price:390, sale_price:null, description:'Stijlvolle lederen rugtas in donkerbruin. Ruim en duurzaam voor dagelijks gebruik.', stock_total:18, rating:4.8, sold_count:56},
+};
+
 async function loadProductFromDB() {
   var params = new URLSearchParams(window.location.search);
   var productId = params.get('id');
 
-  if (!productId || productId.startsWith('demo')) return; // gebruik demo data
+  if (!productId) return;
+
+  // Check of het een demo product is
+  if (productId.startsWith('demo')) {
+    var p = DEMO_PRODUCTS[productId];
+    if (p) updatePageWithProduct(p);
+    return;
+  }
 
   try {
     var r = await fetch(BASE + '/products?id=eq.' + productId + '&select=id,name,description,base_price,sale_price,brand,stock_total,rating,sold_count&limit=1', {
@@ -652,6 +671,51 @@ async function loadProductFromDB() {
   } catch(e) {
     console.log('Kon product niet laden, gebruik demo data:', e);
   }
+}
+
+function updatePageWithProduct(p) {
+  document.title = p.name + ' — BaySani.com';
+  var titleEl = document.querySelector('h1');
+  if (titleEl) titleEl.textContent = p.name;
+  var priceEl = document.querySelector('.price-main');
+  if (priceEl) priceEl.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
+  if (p.sale_price && p.sale_price < p.base_price) {
+    var oldEl = document.querySelector('.price-old');
+    if (oldEl) oldEl.textContent = 'SRD ' + Number(p.base_price).toLocaleString();
+    var saveEl = document.querySelector('.price-save');
+    if (saveEl) saveEl.textContent = '-' + Math.round((1 - p.sale_price/p.base_price)*100) + '%';
+    var subEl = document.querySelector('.price-sub');
+    if (subEl) subEl.innerHTML = 'Je spaart <span>SRD ' + (p.base_price - p.sale_price) + '</span> met deze deal';
+  }
+  if (p.description) {
+    var descEl = document.querySelector('#tab-beschrijving p');
+    if (descEl) descEl.textContent = p.description;
+  }
+  if (p.brand) {
+    var brandEl = document.querySelector('.shop-link');
+    if (brandEl) brandEl.textContent = '🏪 ' + p.brand;
+  }
+  if (p.stock_total !== undefined && p.stock_total !== null) {
+    var stockNum = document.querySelector('.stock-num');
+    if (stockNum) stockNum.textContent = 'Nog ' + p.stock_total + ' op voorraad';
+    var pct = Math.min(100, Math.round((p.stock_total / 50) * 100));
+    var stockFill = document.querySelector('.stock-fill');
+    if (stockFill) stockFill.style.width = pct + '%';
+    var buystockEl = document.querySelector('.buy-box-stock');
+    if (buystockEl && p.stock_total < 10) buystockEl.textContent = '⚠️ Nog maar ' + p.stock_total + ' stuks beschikbaar!';
+  }
+  if (p.rating) {
+    var ratingEl = document.querySelector('.rating-num');
+    if (ratingEl) ratingEl.textContent = p.rating;
+  }
+  if (p.sold_count) {
+    var soldEl = document.querySelector('.sold-badge');
+    if (soldEl) soldEl.textContent = '🔥 ' + p.sold_count + '+ verkocht';
+  }
+  var breadcrumbLast = document.querySelector('.breadcrumb span:last-child');
+  if (breadcrumbLast) breadcrumbLast.textContent = p.name;
+  var boxPrice = document.querySelector('.buy-box-price');
+  if (boxPrice) boxPrice.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
 }
 
 // Countdown timer

@@ -413,35 +413,111 @@ function togglePw(id) {
   if(inp) inp.type = inp.type==='password'?'text':'password';
 }
 
-// PHONE OTP FLOW
+// SUPABASE CONFIG
+var SUPA_URL = 'https://jwctzyddaxweavqrttqr.supabase.co';
+var SUPA_KEY = 'sb_publishable_WFWd1ia-e2pwrpSt_IZ3xw_EO5CCb_s';
+
+// PHONE OTP FLOW — echte Supabase auth
 var otpSent = false, otpInterval, otpCountdown = 30;
 
-function handlePhoneLogin() {
+async function handlePhoneLogin() {
   var inp = document.getElementById('loginPhone');
   var err = document.getElementById('phoneError');
+  var prefix = document.querySelector('.phone-pre') ? document.querySelector('.phone-pre').value : '+597';
+
   if(!inp.classList.contains('valid')) {
     if(err) err.classList.add('show');
     inp.focus(); return;
   }
   if(err) err.classList.remove('show');
 
+  var phoneNumber = prefix.replace('+','') + inp.value.replace(/\D/g,'');
+  var btn = document.getElementById('phoneBtn');
+
   if(!otpSent) {
-    document.getElementById('otpBlock').classList.add('show');
-    var btn = document.getElementById('phoneBtn');
-    btn.innerHTML = '✅ Code bevestigen';
-    otpSent = true;
-    inp.disabled = true;
-    startOtpTimer();
-    setTimeout(function(){document.querySelectorAll('.otp-digit')[0].focus()},200);
+    // Stuur OTP via Supabase
+    btn.innerHTML = '⏳ Code versturen...';
+    btn.disabled = true;
+
+    try {
+      var r = await fetch(SUPA_URL + '/auth/v1/otp', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone: '+' + phoneNumber, channel: 'sms' })
+      });
+
+      if (r.ok || r.status === 422) {
+        // 422 = test nummer, ook goed
+        document.getElementById('otpBlock').classList.add('show');
+        btn.innerHTML = '✅ Code bevestigen';
+        btn.disabled = false;
+        otpSent = true;
+        inp.disabled = true;
+        startOtpTimer();
+        setTimeout(function(){document.querySelectorAll('.otp-digit')[0].focus()},200);
+      } else {
+        var errData = await r.json();
+        btn.innerHTML = '📲 Stuur verificatiecode';
+        btn.disabled = false;
+        alert('Fout: ' + (errData.message || errData.error_description || 'Probeer opnieuw'));
+      }
+    } catch(e) {
+      btn.innerHTML = '📲 Stuur verificatiecode';
+      btn.disabled = false;
+      alert('Netwerkfout: ' + e.message);
+    }
+
   } else {
+    // Verifieer OTP
     var digits = Array.from(document.querySelectorAll('.otp-digit')).map(function(d){return d.value});
-    if(digits.join('').length===6) {
-      finishLogin('+597 '+inp.value);
-    } else {
+    var code = digits.join('');
+
+    if(code.length !== 6) {
       document.querySelectorAll('.otp-digit').forEach(function(d){
         d.style.borderColor='var(--red)';
         setTimeout(function(){d.style.borderColor=''},1000);
       });
+      return;
+    }
+
+    btn.innerHTML = '⏳ Verifiëren...';
+    btn.disabled = true;
+
+    try {
+      var r = await fetch(SUPA_URL + '/auth/v1/verify', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ phone: '+' + phoneNumber, token: code, type: 'sms' })
+      });
+
+      var data = await r.json();
+
+      if (r.ok && data.access_token) {
+        // Sla sessie op in localStorage
+        localStorage.setItem('baysani_token', data.access_token);
+        localStorage.setItem('baysani_user', JSON.stringify(data.user));
+        finishLogin('+' + phoneNumber);
+      } else {
+        btn.innerHTML = '✅ Code bevestigen';
+        btn.disabled = false;
+        document.querySelectorAll('.otp-digit').forEach(function(d){
+          d.style.borderColor='var(--red)';
+          d.value = '';
+          d.classList.remove('filled');
+          setTimeout(function(){d.style.borderColor=''},1500);
+        });
+        alert('Verkeerde code! Probeer opnieuw.');
+      }
+    } catch(e) {
+      btn.innerHTML = '✅ Code bevestigen';
+      btn.disabled = false;
+      alert('Fout: ' + e.message);
     }
   }
 }
@@ -486,25 +562,89 @@ function otpBack(e, idx) {
   }
 }
 
-// EMAIL LOGIN
-function handleEmailLogin() {
+// EMAIL LOGIN — echte Supabase auth
+async function handleEmailLogin() {
   var btn = document.querySelector('#emailBlock .btn-submit');
+  var email = document.getElementById('loginEmail').value.trim();
+  var password = document.getElementById('loginPw').value;
+
+  if(!email || !password) { alert('Vul e-mail en wachtwoord in!'); return; }
+
   btn.innerHTML = '⏳ Inloggen...'; btn.classList.add('loading');
-  setTimeout(function(){finishLogin(document.getElementById('loginEmail').value||'jij@email.com')}, 1200);
+
+  try {
+    var r = await fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    var data = await r.json();
+
+    if(r.ok && data.access_token) {
+      localStorage.setItem('baysani_token', data.access_token);
+      localStorage.setItem('baysani_user', JSON.stringify(data.user));
+      finishLogin(email);
+    } else {
+      btn.innerHTML = '🔐 Inloggen';
+      btn.classList.remove('loading');
+      alert('Fout: ' + (data.error_description || data.message || 'Controleer je gegevens'));
+    }
+  } catch(e) {
+    btn.innerHTML = '🔐 Inloggen';
+    btn.classList.remove('loading');
+    alert('Fout: ' + e.message);
+  }
 }
 
-// REGISTER
-function handleRegister() {
+// REGISTER — echte Supabase auth
+async function handleRegister() {
   var btn = document.querySelector('#tab-register .btn-submit');
+  var voornaam = document.querySelector('#tab-register input[placeholder="Shanti"]');
+  var achternaam = document.querySelector('#tab-register input[placeholder="Mahabier"]');
+  var phone = document.querySelector('#tab-register input[placeholder="8xx-xxxx"]');
+  var email = document.querySelector('#tab-register input[placeholder="jij@email.com"]');
+  var pw = document.getElementById('regPw');
+
+  if(!email || !email.value || !pw || !pw.value) { alert('Vul alle velden in!'); return; }
+
   btn.innerHTML = '⏳ Account aanmaken...'; btn.classList.add('loading');
-  setTimeout(function(){
-    document.getElementById('successTitle').textContent = 'Account aangemaakt! 🎉';
-    document.getElementById('successSub').textContent = 'Welkom bij BaySani! Je account is klaar. Begin nu met winkelen!';
-    document.getElementById('successUser').textContent = 'Welkom bij BaySani 🇸🇷';
-    spawnConfetti();
-    document.getElementById('successOverlay').classList.add('show');
-    setTimeout(function(){ window.location.href = 'index.html'; }, 2500);
-  }, 1400);
+
+  try {
+    var r = await fetch(SUPA_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: { 'apikey': SUPA_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value.trim(),
+        password: pw.value,
+        data: {
+          full_name: (voornaam ? voornaam.value : '') + ' ' + (achternaam ? achternaam.value : ''),
+          phone_number: phone ? phone.value : ''
+        }
+      })
+    });
+    var data = await r.json();
+
+    if(r.ok) {
+      if(data.access_token) {
+        localStorage.setItem('baysani_token', data.access_token);
+        localStorage.setItem('baysani_user', JSON.stringify(data.user));
+      }
+      document.getElementById('successTitle').textContent = 'Account aangemaakt! 🎉';
+      document.getElementById('successSub').textContent = 'Welkom bij BaySani! Check je e-mail voor bevestiging.';
+      document.getElementById('successUser').textContent = email.value;
+      spawnConfetti();
+      document.getElementById('successOverlay').classList.add('show');
+      setTimeout(function(){ window.location.href = 'index.html'; }, 2500);
+    } else {
+      btn.innerHTML = '🎉 Account aanmaken — Gratis!';
+      btn.classList.remove('loading');
+      alert('Fout: ' + (data.error_description || data.message || 'Probeer opnieuw'));
+    }
+  } catch(e) {
+    btn.innerHTML = '🎉 Account aanmaken — Gratis!';
+    btn.classList.remove('loading');
+    alert('Fout: ' + e.message);
+  }
 }
 
 function socialLogin(provider) { finishLogin('Via '+provider); }

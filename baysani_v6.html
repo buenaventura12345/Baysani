@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BaySani — Database Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; padding: 24px; }
+    .header { text-align: center; padding: 30px 0 24px; }
+    .logo { font-size: 2rem; font-weight: 800; }
+    .logo span { color: #00A44E; }
+    .logo em { color: #FFD000; font-style: normal; }
+    .status-bar { display: flex; align-items: center; gap: 8px; background: #111; border: 1px solid #222; border-radius: 10px; padding: 12px 18px; margin: 0 auto 20px; font-size: 0.85rem; max-width: 900px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #333; flex-shrink: 0; transition: background 0.4s; }
+    .dot.green  { background: #00A44E; box-shadow: 0 0 8px #00A44E88; }
+    .dot.red    { background: #ff4444; box-shadow: 0 0 8px #ff444488; }
+    .dot.orange { background: #FFD000; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: 0 auto; }
+    @media(max-width:600px){.grid{grid-template-columns:1fr}}
+    .card { background: #111; border: 1px solid #222; border-radius: 14px; padding: 24px; }
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: #ccc; }
+    input, textarea { width: 100%; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 10px; outline: none; font-family: inherit; }
+    input:focus, textarea:focus { border-color: #00A44E; }
+    textarea { height: 70px; resize: none; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-top: 8px; font-family: inherit; }
+    .btn-green  { background: #00A44E; color: #fff; }
+    .btn-yellow { background: #FFD000; color: #000; }
+    .btn-red    { background: #1a1a1a; color: #ff6666; border: 1px solid #2a2a2a; }
+    .product-item { background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .product-name { font-weight: 600; font-size: 0.9rem; }
+    .product-sub  { font-size: 0.75rem; color: #555; margin-top: 2px; }
+    .product-price { color: #00A44E; font-weight: 700; }
+    .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; background: #00A44E22; color: #00A44E; font-weight: 600; }
+    .empty-state { text-align: center; color: #444; padding: 30px 0; font-size: 0.88rem; line-height: 1.8; }
+    .log { background: #050505; border: 1px solid #1a1a1a; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.78rem; height: 160px; overflow-y: auto; margin-top: 16px; }
+    .log .ok   { color: #00A44E; }
+    .log .err  { color: #ff4444; }
+    .log .info { color: #FFD000; }
+    .counter { display: flex; gap: 10px; margin-bottom: 16px; }
+    .count-box { flex: 1; background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 10px; padding: 12px; text-align: center; }
+    .count-box .num { font-size: 1.6rem; font-weight: 800; color: #00A44E; }
+    .count-box .lbl { font-size: 0.7rem; color: #555; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Bay<span>Sani</span><em>.com</em></div>
+</div>
+
+<div style="max-width:900px;margin:0 auto">
+  <div class="status-bar">
+    <div class="dot orange" id="dot"></div>
+    <span id="status-text">Verbinding testen...</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>➕ Product toevoegen</h2>
+    <input type="text"   id="p-name"  placeholder="Productnaam (bijv. iPhone 15)" />
+    <input type="text"   id="p-brand" placeholder="Merk (bijv. Apple)" />
+    <input type="number" id="p-price" placeholder="Prijs in SRD (bijv. 2500)" />
+    <textarea            id="p-desc"  placeholder="Beschrijving..."></textarea>
+    <button class="btn btn-green"  id="add-btn" onclick="addProduct()">✚ Toevoegen aan database</button>
+    <button class="btn btn-yellow" onclick="loadProducts()">↻ Producten herladen</button>
+    <button class="btn btn-red"    onclick="clearAll()">✕ Alle testdata verwijderen</button>
+    <div class="log" id="log"><div class="info">▶ Initialiseren...</div></div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Producten in database</h2>
+    <div class="counter">
+      <div class="count-box"><div class="num" id="cnt-p">—</div><div class="lbl">Producten</div></div>
+      <div class="count-box"><div class="num" id="cnt-s" style="color:#FFD000">—</div><div class="lbl">Winkels</div></div>
+      <div class="count-box"><div class="num" id="cnt-u" style="color:#888">—</div><div class="lbl">Gebruikers</div></div>
+    </div>
+    <div id="products-list"><div class="empty-state">Wachten op verbinding...</div></div>
+  </div>
+</div>
+
+<script>
+// ===== CONFIGURATIE =====
+var BASE = 'https://jwctzyddaxweavqrttqr.supabase.co/rest/v1';
+var KEY  = 'sb_publishable_WFWd1ia-e2pwrpSt_IZ3xw_EO5CCb_s';
+
+// Geen library — gewoon directe fetch naar de REST API
+function api(path, method, body) {
+  var opts = {
+    method: method || 'GET',
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(BASE + path, opts).then(function(r) {
+    return r.json().then(function(data) {
+      return { ok: r.ok, status: r.status, data: data };
+    });
+  });
+}
+
+function apiCount(table) {
+  return fetch(BASE + '/' + table + '?select=id', {
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Prefer': 'count=exact',
+      'Range-Unit': 'items',
+      'Range': '0-0'
+    }
+  }).then(function(r) {
+    var cr = r.headers.get('Content-Range');
+    if (cr && cr.indexOf('/') > -1) return parseInt(cr.split('/')[1]);
+    return 0;
+  }).catch(function() { return '?'; });
+}
+
+function addLog(msg, type) {
+  var el = document.getElementById('log');
+  var d = document.createElement('div');
+  d.className = type || 'info';
+  d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setDot(state, msg) {
+  document.getElementById('dot').className = 'dot ' + state;
+  document.getElementById('status-text').textContent = msg;
+}
+
+// Test verbinding
+async function testConn() {
+  addLog('Verbinding testen via REST API...', 'info');
+  try {
+    var r = await api('/products?select=id&limit=1');
+    if (!r.ok) {
+      if (r.status === 404 || (r.data && r.data.message && r.data.message.indexOf('does not exist') > -1)) {
+        setDot('red', '❌ Tabellen bestaan niet — run het schema in Supabase SQL Editor!');
+        addLog('Tabellen bestaan niet! Ga naar Supabase → SQL Editor → Run baysani_schema.sql', 'err');
+        document.getElementById('products-list').innerHTML =
+          '<div class="empty-state">❌ Schema nog niet gerunned.<br><br>Ga naar Supabase<br>→ SQL Editor<br>→ plak baysani_schema.sql<br>→ klik RUN</div>';
+      } else {
+        setDot('red', '❌ Fout ' + r.status);
+        addLog('HTTP ' + r.status + ': ' + JSON.stringify(r.data), 'err');
+      }
+      return;
+    }
+    setDot('green', '✅ Verbonden met BaySani database!');
+    addLog('Verbinding gelukt via REST API! 🎉', 'ok');
+    loadProducts();
+    loadCounts();
+  } catch(e) {
+    setDot('red', '❌ Netwerkfout — check internet');
+    addLog('Fout: ' + e.message, 'err');
+  }
+}
+
+window.loadProducts = async function() {
+  addLog('Producten ophalen...', 'info');
+  try {
+    var r = await api('/products?select=name,base_price,brand&order=created_at.desc&limit=10');
+    var list = document.getElementById('products-list');
+    if (!r.ok) { addLog('Fout: ' + JSON.stringify(r.data), 'err'); return; }
+    if (!r.data || r.data.length === 0) {
+      list.innerHTML = '<div class="empty-state">📭 Geen producten.<br>Voeg er een toe!</div>';
+      addLog('Database leeg.', 'info');
+      return;
+    }
+    list.innerHTML = r.data.map(function(p) {
+      return '<div class="product-item"><div>' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-sub">' + (p.brand || 'Geen merk') + '</div></div>' +
+        '<div style="text-align:right">' +
+        '<div class="product-price">SRD ' + Number(p.base_price).toLocaleString() + '</div>' +
+        '<span class="badge">✓ Live</span></div></div>';
+    }).join('');
+    addLog(r.data.length + ' producten geladen.', 'ok');
+  } catch(e) { addLog('Fout: ' + e.message, 'err'); }
+};
+
+async function loadCounts() {
+  var tabs = [['products','cnt-p'],['stores','cnt-s'],['users','cnt-u']];
+  for (var i = 0; i < tabs.length; i++) {
+    var count = await apiCount(tabs[i][0]);
+    document.getElementById(tabs[i][1]).textContent = count;
+  }
+}
+
+window.addProduct = async function() {
+  var name  = document.getElementById('p-name').value.trim();
+  var brand = document.getElementById('p-brand').value.trim();
+  var price = parseFloat(document.getElementById('p-price').value);
+  var desc  = document.getElementById('p-desc').value.trim();
+  if (!name || !price) { addLog('Vul naam en prijs in!', 'err'); return; }
+
+  document.getElementById('add-btn').disabled = true;
+  addLog('Toevoegen: ' + name + ' @ SRD ' + price, 'info');
+
+  try {
+    var r = await api('/products', 'POST', {
+      name: name,
+      brand: brand || null,
+      base_price: price,
+      description: desc || null,
+      slug: name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '-' + Date.now(),
+      stock_total: 99,
+      is_active: true
+    });
+
+    if (!r.ok) {
+      addLog('Fout: ' + JSON.stringify(r.data), 'err');
+      if (JSON.stringify(r.data).indexOf('store_id') > -1) {
+        addLog('store_id is verplicht — eerst winkel aanmaken!', 'info');
+      }
+    } else {
+      addLog('✅ "' + name + '" toegevoegd!', 'ok');
+      ['p-name','p-brand','p-price','p-desc'].forEach(function(id){ document.getElementById(id).value = ''; });
+      loadProducts();
+      loadCounts();
+    }
+  } catch(e) { addLog('Fout: ' + e.message, 'err'); }
+  document.getElementById('add-btn').disabled = false;
+};
+
+window.clearAll = async function() {
+  if (!confirm('Alle testproducten verwijderen?')) return;
+  try {
+    var r = await api('/products?id=neq.00000000-0000-0000-0000-000000000000', 'DELETE');
+    addLog('Verwijderd.', 'ok');
+    loadProducts(); loadCounts();
+  } catch(e) { addLog('Fout: ' + e.message, 'err'); }
+};
+
+// Start
+testConn();
+</script>
+</body>
+</html>

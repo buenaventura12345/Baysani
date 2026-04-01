@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Afrekenen — BaySani.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:#00A44E; --green2:#007A3A; --yellow:#FFD000; --yellow2:#FFA500;
+      --red:#E53E3E; --bg:#F4F6F8; --white:#FFFFFF; --text:#1A1A2E;
+      --muted:#6B7280; --border:#E5E7EB; --radius:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* NAV */
+    nav{background:var(--white);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.05);position:sticky;top:0;z-index:200}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .logo{font-size:1.5rem;font-weight:800;text-decoration:none;color:var(--text)}
+    .logo em{color:var(--green);font-style:normal}
+    .logo span{color:var(--yellow2)}
+    .nav-trust{display:flex;gap:20px}
+    .trust-chip{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
+
+    /* PROGRESS */
+    .progress-wrap{max-width:1100px;margin:0 auto;padding:24px 20px 8px}
+    .progress-steps{display:flex;align-items:center;position:relative}
+    .progress-line{position:absolute;top:20px;left:0;right:0;height:2px;background:var(--border);z-index:0}
+    .progress-fill{height:2px;background:linear-gradient(90deg,var(--green),var(--yellow));transition:width .5s}
+    .p-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1}
+    .p-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;border:2px solid var(--border);background:var(--white);color:var(--muted);transition:all .3s}
+    .p-step.done .p-dot{background:var(--green);border-color:var(--green);color:#fff}
+    .p-step.active .p-dot{background:var(--yellow);border-color:var(--yellow);color:#000;box-shadow:0 0 0 6px rgba(255,208,0,.2)}
+    .p-label{font-size:11px;color:var(--muted);font-weight:500;text-align:center}
+    .p-step.done .p-label{color:var(--green)}
+    .p-step.active .p-label{color:var(--yellow2);font-weight:700}
+
+    /* LAYOUT */
+    .checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;max-width:1100px;margin:24px auto 60px;padding:0 20px;align-items:start}
+
+    /* CARD */
+    .card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;animation:slideUp .3s ease both}
+    .card:nth-child(2){animation-delay:.07s}
+    .card:nth-child(3){animation-delay:.14s}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .step-badge{width:26px;height:26px;border-radius:7px;background:var(--green);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* FORM */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .form-row.single{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:4px}
+    label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    input,select{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .2s;width:100%}
+    input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,164,78,.1);background:var(--white)}
+    input:valid:not(:placeholder-shown){border-color:rgba(0,164,78,.5);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300A44E' stroke-width='2.5'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:40px}
+
+    /* DELIVERY OPTS */
+    .delivery-opts{display:flex;flex-direction:column;gap:10px}
+    .d-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;position:relative;background:var(--white)}
+    .d-opt:hover{border-color:var(--green);background:#f0faf5}
+    .d-opt.selected{border-color:var(--green);background:#f0faf5}
+    .d-opt.selected::after{content:'✓';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--green);font-weight:800;font-size:16px}
+    .d-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;transition:all .2s;position:relative}
+    .d-opt.selected .d-radio{border-color:var(--green);background:var(--green)}
+    .d-opt.selected .d-radio::after{content:'';position:absolute;top:3px;left:3px;width:8px;height:8px;background:#fff;border-radius:50%}
+    .d-icon{font-size:24px;flex-shrink:0}
+    .d-info{flex:1}
+    .d-title{font-weight:600;font-size:14px}
+    .d-desc{font-size:12px;color:var(--muted);margin-top:2px}
+    .d-price{font-weight:700;font-size:14px;color:var(--text);white-space:nowrap}
+    .d-price.free{color:var(--green)}
+
+    /* PAYMENT */
+    .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .pay-opt{padding:14px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;background:var(--white)}
+    .pay-opt:hover{border-color:var(--green)}
+    .pay-opt.selected{border-color:var(--yellow);background:#fffde7}
+    .pay-icon-big{font-size:24px}
+    .pay-name{font-size:13px;font-weight:600}
+    .pay-sub{font-size:11px;color:var(--muted)}
+
+    /* ORDER SUMMARY */
+    .summary-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:84px}
+    .summary-title{font-size:16px;font-weight:700;margin-bottom:16px}
+
+    /* URGENCY STRIP */
+    .urgency-strip{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:600}
+
+    /* COUNTDOWN */
+    .countdown-strip{background:#f0faf5;border:1px solid #d1fae5;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:16px;display:flex;align-items:center;gap:8px;font-weight:600}
+    .countdown{font-weight:800;color:var(--green)}
+
+    /* ORDER ITEMS */
+    .order-item{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+    .item-img{width:56px;height:56px;background:var(--bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid var(--border);position:relative}
+    .item-qty-badge{position:absolute;top:-6px;right:-6px;background:var(--green);color:#fff;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .item-info{flex:1}
+    .item-shop{font-size:11px;color:var(--green);margin-bottom:2px;font-weight:600}
+    .item-name{font-size:13px;font-weight:600;line-height:1.3}
+    .item-variant{font-size:11px;color:var(--muted);margin-top:2px}
+    .item-price{font-size:14px;font-weight:800;white-space:nowrap}
+
+    .divider{border:none;border-top:1.5px solid var(--border);margin:14px 0}
+
+    .price-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+    .price-row .label{color:var(--muted)}
+    .price-row.saving .label,.price-row.saving .value{color:var(--green);font-weight:600}
+    .price-row.total .label{font-size:15px;font-weight:700;color:var(--text)}
+    .price-row.total .value{font-size:1.4rem;font-weight:800;color:var(--text)}
+
+    /* COUPON */
+    .coupon-row{display:flex;gap:8px;margin-bottom:14px}
+    .coupon-input{flex:1;padding:10px 14px;background:var(--bg);border:1.5px dashed #d1fae5;border-radius:9px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+    .coupon-input:focus{border-color:var(--green)}
+    .btn-coupon{padding:10px 14px;background:#f0faf5;border:1.5px solid #d1fae5;color:var(--green);border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+    .btn-coupon:hover{background:#d1fae5}
+
+    /* CTA */
+    .btn-checkout{width:100%;padding:18px;background:var(--yellow);color:#000;font-family:'Inter',sans-serif;font-size:16px;font-weight:800;border:none;border-radius:12px;cursor:pointer;transition:all .2s;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+    .btn-checkout::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .5s}
+    .btn-checkout:hover{background:var(--yellow2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,208,0,.4)}
+    .btn-checkout:hover::before{left:160%}
+    .btn-checkout:active{transform:scale(.98)}
+    .btn-checkout.done{background:var(--green);color:#fff}
+
+    .trust-strip{display:flex;justify-content:center;gap:16px;margin-top:12px;flex-wrap:wrap}
+    .trust-chip-sm{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+
+    /* PROGRESS BAR DURING CHECKOUT */
+    .form-progress{height:4px;background:var(--border);border-radius:2px;margin-bottom:20px;overflow:hidden}
+    .form-progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--yellow));border-radius:2px;transition:width .4s ease;width:0%}
+
+    /* SUCCESS OVERLAY */
+    .success-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:9999;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:20px;animation:fadeIn .4s ease}
+    .success-overlay.show{display:flex}
+    .success-icon{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--green),#00c45e);display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 0 0 16px rgba(0,164,78,.1),0 0 0 32px rgba(0,164,78,.05);animation:popIn .5s .1s cubic-bezier(.34,1.56,.64,1) both}
+    .success-title{font-size:2rem;font-weight:800;color:var(--text)}
+    .success-sub{color:var(--muted);font-size:15px;max-width:38ch;line-height:1.7}
+    .order-num{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 32px;font-weight:800;font-size:18px;color:var(--green);letter-spacing:.08em}
+    .confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .confetti-dot{position:absolute;width:10px;height:10px;border-radius:50%;animation:fall 2.5s ease-in forwards}
+
+    /* MOBILE STICKY CTA */
+    .mobile-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1.5px solid var(--border);padding:16px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.08);z-index:100}
+    .mobile-cta .btn-checkout{margin-top:0}
+    @media(max-width:860px){.checkout-grid{grid-template-columns:1fr}.summary-box{position:static;order:-1}.mobile-cta{display:block}}
+    @media(max-width:500px){.form-row{grid-template-columns:1fr}.pay-grid{grid-template-columns:1fr 1fr}.nav-trust{display:none}}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    @keyframes fall{from{transform:translateY(-40px) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+  </style>
+</head>
+<body>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="confetti-wrap" id="confetti"></div>
+  <div class="success-icon">✅</div>
+  <div class="success-title">Bestelling geplaatst! 🎉</div>
+  <div class="success-sub">Bedankt voor je bestelling bij BaySani. Je ontvangt een bevestiging per WhatsApp en e-mail.</div>
+  <div class="order-num" id="orderNum">FY-2025-000001</div>
+  <a href="index.html" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;font-family:'Inter',sans-serif">Terug naar BaySani →</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Bay<em>Sani</em><span>.com</span></a>
+    <div class="nav-trust">
+      <div class="trust-chip">🔒 SSL-beveiligd</div>
+      <div class="trust-chip">✅ Veilig betalen</div>
+      <div class="trust-chip">↩️ 30 dagen retour</div>
+    </div>
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="progress-line"><div class="progress-fill" id="progressFill" style="width:50%"></div></div>
+    <div class="p-step done"><div class="p-dot">✓</div><div class="p-label">Winkelwagen</div></div>
+    <div class="p-step active"><div class="p-dot">2</div><div class="p-label">Gegevens & Betaling</div></div>
+    <div class="p-step"><div class="p-dot">3</div><div class="p-label">Bevestiging</div></div>
+  </div>
+</div>
+
+<div class="checkout-grid">
+
+  <!-- LEFT: FORMS -->
+  <div>
+
+    <!-- FORM PROGRESS -->
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 24px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Jouw voortgang</div>
+        <div class="form-progress"><div class="form-progress-fill" id="formProgress"></div></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--green)" id="progressPct">0% ingevuld</div>
+    </div>
+
+    <!-- CONTACTGEGEVENS -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">1</span> Contactgegevens</div>
+      <div class="form-row">
+        <div class="form-group"><label>Voornaam</label><input type="text" placeholder="Bijv. Shanti" required id="f-voornaam" oninput="updateProgress()"/></div>
+        <div class="form-group"><label>Achternaam</label><input type="text" placeholder="Bijv. Mahabier" required id="f-achternaam" oninput="updateProgress()"/></div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group"><label>E-mailadres</label><input type="email" placeholder="jij@email.com" required id="f-email" oninput="updateProgress()"/></div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group"><label>Telefoonnummer (WhatsApp)</label><input type="tel" placeholder="+597 8xx-xxxx" required id="f-tel" oninput="updateProgress()"/></div>
+      </div>
+    </div>
+
+    <!-- BEZORGING -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">2</span> Bezorging of Afhalen</div>
+      <div class="delivery-opts">
+        <div class="d-opt selected" onclick="selectDelivery(this, 25)">
+          <div class="d-radio"></div>
+          <span class="d-icon">🚚</span>
+          <div class="d-info">
+            <div class="d-title">Bezorging aan huis</div>
+            <div class="d-desc">Morgen in huis · Heel Suriname · Bestel voor 17:00</div>
+          </div>
+          <span class="d-price">SRD 25</span>
+        </div>
+        <div class="d-opt" onclick="selectDelivery(this, 0)">
+          <div class="d-radio"></div>
+          <span class="d-icon">🏪</span>
+          <div class="d-info">
+            <div class="d-title">Afhalen bij winkel</div>
+            <div class="d-desc">Vandaag klaar · Domineestraat 42, Paramaribo</div>
+          </div>
+          <span class="d-price free">Gratis</span>
+        </div>
+        <div class="d-opt" onclick="selectDelivery(this, 10)">
+          <div class="d-radio"></div>
+          <span class="d-icon">🏢</span>
+          <div class="d-info">
+            <div class="d-title">Afhaalpunt</div>
+            <div class="d-desc">10 locaties in Paramaribo · Kies jouw punt</div>
+          </div>
+          <span class="d-price">SRD 10</span>
+        </div>
+      </div>
+
+      <!-- ADRES (toont bij bezorging) -->
+      <div id="adresBlock" style="margin-top:16px">
+        <div class="form-row single"><div class="form-group"><label>Straat & Huisnummer</label><input type="text" placeholder="Bijv. Kernkampweg 45" oninput="updateProgress()"/></div></div>
+        <div class="form-row">
+          <div class="form-group"><label>District</label>
+            <select>
+              <option>Paramaribo</option><option>Wanica</option><option>Nickerie</option>
+              <option>Saramacca</option><option>Commewijne</option><option>Marowijne</option>
+              <option>Para</option><option>Brokopondo</option><option>Sipaliwini</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Opmerking voor bezorger</label><input type="text" placeholder="Bijv. Bel aan bij hek"/></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BETAALMETHODE -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">3</span> Betaalmethode</div>
+      <div class="pay-grid">
+        <div class="pay-opt selected" onclick="selectPay(this)">
+          <span class="pay-icon-big">💵</span>
+          <div><div class="pay-name">Cash bij levering</div><div class="pay-sub">Betaal als het arriveert</div></div>
+        </div>
+        <div class="pay-opt" onclick="selectPay(this)">
+          <span class="pay-icon-big">📱</span>
+          <div><div class="pay-name">Mopé Wallet</div><div class="pay-sub">Snel & eenvoudig</div></div>
+        </div>
+        <div class="pay-opt" onclick="selectPay(this)">
+          <span class="pay-icon-big">💳</span>
+          <div><div class="pay-name">Visa / Mastercard</div><div class="pay-sub">Veilige betaling</div></div>
+        </div>
+        <div class="pay-opt" onclick="selectPay(this)">
+          <span class="pay-icon-big">🏦</span>
+          <div><div class="pay-name">Bankoverschrijving</div><div class="pay-sub">DSB, RBC, Finabank</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPMERKING -->
+    <div class="card">
+      <div class="card-title"><span class="step-badge">4</span> Opmerking (optioneel)</div>
+      <textarea style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:80px;transition:border-color .2s" placeholder="Bijv. speciale instructies voor bezorger..." onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: ORDER SUMMARY -->
+  <div>
+    <div class="summary-box">
+      <div class="summary-title">📦 Jouw bestelling</div>
+
+      <!-- URGENCY -->
+      <div class="urgency-strip">⚠️ Nog maar <strong>7 stuks</strong> beschikbaar — bestel nu!</div>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown-strip">🚚 Bezorging morgen als je bestelt voor <span class="countdown" id="ctdwn">--:--</span></div>
+
+      <!-- ITEMS -->
+      <div class="order-item">
+        <div class="item-img">👟<span class="item-qty-badge">1</span></div>
+        <div class="item-info">
+          <div class="item-shop">🏪 SportZone Paramaribo</div>
+          <div class="item-name">Nike Air Max 270 — Zwart/Wit</div>
+          <div class="item-variant">Maat 41 · Zwart/Wit</div>
+        </div>
+        <div class="item-price">SRD 850</div>
+      </div>
+      <div class="order-item">
+        <div class="item-img">👗<span class="item-qty-badge">2</span></div>
+        <div class="item-info">
+          <div class="item-shop">🏪 Modepaleis Nickerie</div>
+          <div class="item-name">Zomerjurk Bloemenprint</div>
+          <div class="item-variant">Maat M · Roze</div>
+        </div>
+        <div class="item-price">SRD 360</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- COUPON -->
+      <div class="coupon-row">
+        <input class="coupon-input" type="text" placeholder="Kortingscode..." id="couponInput"/>
+        <button class="btn-coupon" onclick="applyCoupon()">Toepassen</button>
+      </div>
+
+      <!-- PRICE BREAKDOWN -->
+      <div class="price-row"><span class="label">Subtotaal</span><span class="value">SRD 1.210</span></div>
+      <div class="price-row saving"><span class="label">🎉 Jij bespaart</span><span class="value">- SRD 250</span></div>
+      <div class="price-row" id="deliveryRow"><span class="label">Bezorging</span><span class="value" id="deliveryPrice">SRD 25</span></div>
+      <div class="price-row"><span class="label">Coupon</span><span class="value" id="couponVal">- SRD 0</span></div>
+
+      <div class="divider"></div>
+
+      <div class="price-row total">
+        <span class="label">Totaal</span>
+        <span class="value" id="totalPrice">SRD 1.235</span>
+      </div>
+
+      <!-- BIG CTA -->
+      <button class="btn-checkout" id="checkoutBtn" onclick="placeOrder(this)">
+        🔒 Bestelling plaatsen
+      </button>
+
+      <div class="trust-strip">
+        <span class="trust-chip-sm">🔒 SSL-beveiligd</span>
+        <span class="trust-chip-sm">✅ Veilig betalen</span>
+        <span class="trust-chip-sm">↩️ 30d retour</span>
+      </div>
+
+      <!-- SOCIAL PROOF -->
+      <div style="margin-top:16px;background:var(--bg);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">👥</span>
+        <span><strong id="orderCount" style="color:var(--text)">24</strong> mensen plaatsten vandaag een bestelling</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE STICKY CTA -->
+<div class="mobile-cta">
+  <button class="btn-checkout" onclick="placeOrder(document.getElementById('checkoutBtn'))">🔒 Bestelling plaatsen — SRD 1.235</button>
+</div>
+
+<script>
+var deliveryCost = 25;
+var couponDiscount = 0;
+var base = 1210;
+
+// Countdown to 17:00
+function startCountdown() {
+  var now = new Date();
+  var cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
+  if (now > cutoff) cutoff.setDate(cutoff.getDate()+1);
+  function tick() {
+    var diff = cutoff - new Date();
+    if (diff < 0) { document.getElementById('ctdwn').textContent = 'morgen'; return; }
+    var h = Math.floor(diff/3600000);
+    var m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    document.getElementById('ctdwn').textContent = h + ':' + m + ' uur';
+  }
+  tick(); setInterval(tick, 60000);
+}
+
+function updateTotal() {
+  var total = base + deliveryCost - couponDiscount;
+  document.getElementById('totalPrice').textContent = 'SRD ' + total.toLocaleString();
+  document.getElementById('deliveryPrice').textContent = deliveryCost === 0 ? 'Gratis' : 'SRD ' + deliveryCost;
+}
+
+function selectDelivery(el, cost) {
+  document.querySelectorAll('.d-opt').forEach(function(o){o.classList.remove('selected')});
+  el.classList.add('selected');
+  deliveryCost = cost;
+  var adres = document.getElementById('adresBlock');
+  if (adres) adres.style.display = cost > 0 ? 'block' : 'none';
+  updateTotal();
+}
+
+function selectPay(el) {
+  document.querySelectorAll('.pay-opt').forEach(function(o){o.classList.remove('selected')});
+  el.classList.add('selected');
+}
+
+function applyCoupon() {
+  var code = document.getElementById('couponInput').value.trim().toUpperCase();
+  if (code === 'BAYSANI10') {
+    couponDiscount = 121;
+    document.getElementById('couponVal').textContent = '- SRD 121';
+    document.getElementById('couponVal').style.color = 'var(--green)';
+    alert('✅ Kortingscode toegepast! 10% korting = SRD 121');
+  } else if (code) {
+    alert('❌ Ongeldige kortingscode. Probeer BAYSANI10!');
+  }
+  updateTotal();
+}
+
+// Form progress bar
+function updateProgress() {
+  var fields = ['f-voornaam','f-achternaam','f-email','f-tel'];
+  var filled = fields.filter(function(id){
+    var el = document.getElementById(id);
+    return el && el.value.trim().length > 1;
+  }).length;
+  var pct = Math.round((filled / fields.length) * 100);
+  document.getElementById('formProgress').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '% ingevuld';
+  if (pct === 100) document.getElementById('progressPct').style.color = 'var(--green)';
+}
+
+// Live order counter
+function liveOrders() {
+  var count = 24;
+  setInterval(function() {
+    if (Math.random() > 0.6) {
+      count++;
+      var el = document.getElementById('orderCount');
+      if (el) el.textContent = count;
+    }
+  }, 15000);
+}
+
+function placeOrder(btn) {
+  var name = document.getElementById('f-voornaam');
+  if (name && name.value.trim().length < 2) {
+    name.focus();
+    name.style.borderColor = 'var(--red)';
+    alert('Vul eerst je voornaam in!');
+    return;
+  }
+
+  btn.innerHTML = '⏳ Bestelling verwerken...';
+  btn.disabled = true;
+
+  // Progress fill animation
+  document.getElementById('progressFill').style.width = '100%';
+  document.querySelectorAll('.p-step').forEach(function(s){s.classList.add('done');s.classList.remove('active')});
+
+  setTimeout(function() {
+    // Generate order number
+    var num = 'FY-2025-' + String(Math.floor(Math.random()*900)+100).padStart(6,'0');
+    document.getElementById('orderNum').textContent = num;
+
+    // Confetti
+    var wrap = document.getElementById('confetti');
+    var colors = ['#00A44E','#FFD000','#FFA500','#E53E3E','#3B82F6','#8B5CF6'];
+    for (var i = 0; i < 60; i++) {
+      var dot = document.createElement('div');
+      dot.className = 'confetti-dot';
+      dot.style.cssText = 'left:'+Math.random()*100+'%;background:'+colors[Math.floor(Math.random()*colors.length)]+';animation-delay:'+Math.random()*1.5+'s;animation-duration:'+(2+Math.random())+'s;width:'+(8+Math.random()*8)+'px;height:'+(8+Math.random()*8)+'px';
+      wrap.appendChild(dot);
+    }
+
+    document.getElementById('successOverlay').classList.add('show');
+  }, 2000);
+}
+
+// Init
+startCountdown();
+liveOrders();
+updateTotal();
+</script>
+</body>
+</html>

@@ -577,104 +577,107 @@ var DEMO_PRODUCTS = {
 async function loadProductFromDB() {
   var params = new URLSearchParams(window.location.search);
   var productId = params.get('id');
+  console.log('Product ID uit URL:', productId);
+  if (!productId) { console.log('Geen product ID gevonden'); return; }
 
-  if (!productId) return;
+  var p = null;
 
-  // Check of het een demo product is
+  // Demo product
   if (productId.startsWith('demo')) {
-    var p = DEMO_PRODUCTS[productId];
-    if (p) updatePageWithProduct(p);
-    return;
+    p = DEMO_PRODUCTS[productId];
+    console.log('Demo product gevonden:', p ? p.name : 'NIET GEVONDEN');
+  } else {
+    // Echt product uit Supabase
+    try {
+      var url = BASE + '/products?id=eq.' + productId + '&select=id,name,description,base_price,sale_price,brand,stock_total,rating,sold_count&limit=1';
+      console.log('Fetching:', url);
+      var r = await fetch(url, { headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY} });
+      var data = await r.json();
+      console.log('Supabase response:', JSON.stringify(data));
+      if (data && data.length > 0) p = data[0];
+    } catch(e) {
+      console.log('Fetch fout:', e.message);
+    }
   }
 
-  try {
-    var r = await fetch(BASE + '/products?id=eq.' + productId + '&select=id,name,description,base_price,sale_price,brand,stock_total,rating,sold_count&limit=1', {
-      headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
-    });
-    var data = await r.json();
-    if (!data || data.length === 0) return;
+  if (!p) { console.log('Geen product data, gebruik standaard pagina'); return; }
+  console.log('Product laden:', p.name);
 
-    var p = data[0];
+  // Update alles op de pagina
+  document.title = p.name + ' — BaySani.com';
 
-    // Update pagina titel
-    document.title = p.name + ' — BaySani.com';
+  // Productnaam — alle h1 elementen
+  document.querySelectorAll('h1').forEach(function(el) { el.textContent = p.name; });
 
-    // Update productnaam
-    var titleEl = document.querySelector('h1');
-    if (titleEl) titleEl.textContent = p.name;
+  // Prijs
+  var currentPrice = p.sale_price && p.sale_price < p.base_price ? p.sale_price : p.base_price;
+  document.querySelectorAll('.price-main, .buy-box-price').forEach(function(el) {
+    el.textContent = 'SRD ' + Number(currentPrice).toLocaleString();
+  });
 
-    // Update prijs
-    var priceEl = document.querySelector('.price-main');
-    if (priceEl) priceEl.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
-
-    // Update oude prijs
-    if (p.sale_price && p.sale_price < p.base_price) {
-      var oldEl = document.querySelector('.price-old');
-      if (oldEl) oldEl.textContent = 'SRD ' + Number(p.base_price).toLocaleString();
-      var saveEl = document.querySelector('.price-save');
-      if (saveEl) saveEl.textContent = '-' + Math.round((1 - p.sale_price/p.base_price)*100) + '%';
-      var subEl = document.querySelector('.price-sub');
-      if (subEl) subEl.innerHTML = 'Je spaart <span>SRD ' + (p.base_price - p.sale_price) + '</span> met deze deal';
-    }
-
-    // Update beschrijving
-    if (p.description) {
-      var descEl = document.querySelector('.tab-content p');
-      if (descEl) descEl.textContent = p.description;
-    }
-
-    // Update merk
-    if (p.brand) {
-      var brandEl = document.querySelector('.shop-link');
-      if (brandEl) brandEl.textContent = '🏪 ' + p.brand;
-    }
-
-    // Update product naam in buy box titel
-    var titleEl2 = document.querySelector('.modal-title');
-
-    // Update stock
-    if (p.stock_total !== null) {
-      var stockNum = document.querySelector('.stock-num');
-      if (stockNum) stockNum.textContent = 'Nog ' + p.stock_total + ' op voorraad';
-      var stockFill = document.querySelector('.stock-fill');
-      if (stockFill) {
-        var pct = Math.min(100, Math.round((p.stock_total / 50) * 100));
-        stockFill.style.width = pct + '%';
-      }
-      var buystockEl = document.querySelector('.buy-box-stock');
-      if (buystockEl && p.stock_total < 10) {
-        buystockEl.textContent = '⚠️ Nog maar ' + p.stock_total + ' stuks beschikbaar!';
-      }
-    }
-
-    // Update rating
-    if (p.rating) {
-      var ratingEl = document.querySelector('.rating-num');
-      if (ratingEl) ratingEl.textContent = p.rating;
-    }
-
-    // Update sold count
-    if (p.sold_count) {
-      var soldEl = document.querySelector('.sold-badge');
-      if (soldEl) soldEl.textContent = '🔥 ' + p.sold_count + '+ verkocht';
-    }
-
-    // Update breadcrumb
-    var breadcrumbLast = document.querySelector('.breadcrumb span:last-child');
-    if (breadcrumbLast) breadcrumbLast.textContent = p.name;
-
-    // Update buy box prijs
-    var boxPrice = document.querySelector('.buy-box-price');
-    if (boxPrice) boxPrice.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
-
-    console.log('Product geladen:', p.name);
-  } catch(e) {
-    console.log('Kon product niet laden, gebruik demo data:', e);
+  // Korting
+  if (p.sale_price && p.sale_price < p.base_price) {
+    var pct = Math.round((1 - p.sale_price/p.base_price)*100);
+    var oldEl = document.querySelector('.price-old');
+    if (oldEl) oldEl.textContent = 'SRD ' + Number(p.base_price).toLocaleString();
+    var saveEl = document.querySelector('.price-save');
+    if (saveEl) saveEl.textContent = '-' + pct + '%';
+    var subEl = document.querySelector('.price-sub');
+    if (subEl) subEl.innerHTML = 'Je spaart <span>SRD ' + (p.base_price - p.sale_price) + '</span>';
+  } else {
+    // Geen korting — verberg korting elementen
+    var oldEl = document.querySelector('.price-old');
+    if (oldEl) oldEl.style.display = 'none';
+    var saveEl = document.querySelector('.price-save');
+    if (saveEl) saveEl.style.display = 'none';
   }
+
+  // Merk / winkel
+  if (p.brand) {
+    var brandEl = document.querySelector('.shop-link');
+    if (brandEl) brandEl.textContent = '🏪 ' + p.brand;
+  }
+
+  // Beschrijving
+  if (p.description) {
+    var descEl = document.querySelector('#tab-beschrijving p');
+    if (descEl) descEl.textContent = p.description;
+  }
+
+  // Voorraad
+  if (p.stock_total !== null && p.stock_total !== undefined) {
+    var stockNum = document.querySelector('.stock-num');
+    if (stockNum) stockNum.textContent = 'Nog ' + p.stock_total + ' op voorraad';
+    var pct2 = Math.min(100, Math.round((p.stock_total / 50) * 100));
+    var stockFill = document.querySelector('.stock-fill');
+    if (stockFill) stockFill.style.width = pct2 + '%';
+    var buystockEl = document.querySelector('.buy-box-stock');
+    if (buystockEl) buystockEl.textContent = p.stock_total < 10 ? '⚠️ Nog maar ' + p.stock_total + ' stuks!' : '✅ Op voorraad';
+  }
+
+  // Rating & verkopen
+  if (p.rating) {
+    var ratingEl = document.querySelector('.rating-num');
+    if (ratingEl) ratingEl.textContent = p.rating;
+  }
+  if (p.sold_count) {
+    var soldEl = document.querySelector('.sold-badge');
+    if (soldEl) soldEl.textContent = '🔥 ' + p.sold_count + '+ verkocht';
+  }
+
+  // Breadcrumb
+  var breadEl = document.querySelector('.breadcrumb span:last-child');
+  if (breadEl) breadEl.textContent = p.name;
+
+  console.log('✅ Pagina succesvol bijgewerkt met:', p.name);
 }
 
 function updatePageWithProduct(p) {
+  console.log('Updating page with:', p.name);
   document.title = p.name + ' — BaySani.com';
+  // Update alle h1 elementen
+  var allH1 = document.querySelectorAll('h1');
+  allH1.forEach(function(el) { el.textContent = p.name; });
   var titleEl = document.querySelector('h1');
   if (titleEl) titleEl.textContent = p.name;
   var priceEl = document.querySelector('.price-main');
@@ -842,12 +845,15 @@ function showToast() {
 }
 setTimeout(function() { showToast(); setInterval(showToast, 10000); }, 4000);
 
-// Init
-loadProductFromDB();
-startTimer();
-deliveryCountdown();
-liveViewers();
-document.getElementById('selectedSize').textContent = '41';
+// Init - wacht tot pagina volledig geladen is
+window.addEventListener('DOMContentLoaded', function() {
+  loadProductFromDB();
+  startTimer();
+  deliveryCountdown();
+  liveViewers();
+  var sizeEl = document.getElementById('selectedSize');
+  if (sizeEl) sizeEl.textContent = '41';
+});
 </script>
 </body>
 </html>

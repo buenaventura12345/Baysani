@@ -503,6 +503,7 @@ function handleRegister() {
     document.getElementById('successUser').textContent = 'Welkom bij BaySani 🇸🇷';
     spawnConfetti();
     document.getElementById('successOverlay').classList.add('show');
+    setTimeout(function(){ window.location.href = 'index.html'; }, 2500);
   }, 1400);
 }
 
@@ -514,6 +515,7 @@ function finishLogin(id) {
   document.getElementById('successUser').textContent = id;
   spawnConfetti();
   document.getElementById('successOverlay').classList.add('show');
+    setTimeout(function(){ window.location.href = 'index.html'; }, 2500);
 }
 
 function spawnConfetti() {

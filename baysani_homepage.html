@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BaySani — Heel Suriname Winkelt Hier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:  #00A44E;
+      --green2: #007A3A;
+      --yellow: #FFD000;
+      --yellow2:#FFA500;
+      --red:    #E53E3E;
+      --bg:     #F4F6F8;
+      --white:  #FFFFFF;
+      --text:   #1A1A2E;
+      --muted:  #6B7280;
+      --border: #E5E7EB;
+      --card:   #FFFFFF;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--green);
+      padding: 6px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: .02em;
+    }
+    .topbar span { color: var(--yellow); }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--white);
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 20px;
+    }
+    .logo {
+      font-size: 1.6rem; font-weight: 800;
+      text-decoration: none; color: var(--text);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .logo em { color: var(--green); font-style: normal; }
+    .logo span { color: var(--yellow2); }
+
+    .search-wrap {
+      flex: 1;
+      display: flex;
+      border: 2px solid var(--green);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 700px;
+    }
+    .search-wrap select {
+      border: none; background: #f0faf5;
+      padding: 0 12px; font-size: 13px;
+      color: var(--text); cursor: pointer;
+      border-right: 1.5px solid var(--border);
+      min-width: 120px; outline: none;
+    }
+    .search-wrap input {
+      flex: 1; border: none; outline: none;
+      padding: 10px 14px; font-size: 15px;
+      font-family: 'Inter', sans-serif;
+    }
+    .search-wrap button {
+      background: var(--green); border: none;
+      color: #fff; padding: 0 20px;
+      font-size: 18px; cursor: pointer;
+      transition: background .2s;
+    }
+    .search-wrap button:hover { background: var(--green2); }
+
+    .nav-actions { display: flex; gap: 12px; flex-shrink: 0; }
+    .nav-btn {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px; background: none; border: none; cursor: pointer;
+      font-size: 11px; color: var(--muted); padding: 4px 8px;
+      border-radius: 8px; transition: background .2s; text-decoration: none;
+    }
+    .nav-btn:hover { background: #f0faf5; color: var(--green); }
+    .nav-btn .icon { font-size: 22px; }
+    .cart-badge {
+      position: relative;
+    }
+    .cart-badge::after {
+      content: attr(data-count);
+      position: absolute; top: -6px; right: -6px;
+      background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 700;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── CATEGORY PILLS ── */
+    .cat-pills {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .cat-pills::-webkit-scrollbar { display: none; }
+    .cat-pills-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; gap: 8px; padding: 10px 20px;
+      white-space: nowrap;
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f0faf5; border: 1.5px solid transparent;
+      border-radius: 100px; padding: 6px 14px;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: all .15s; color: var(--text);
+      white-space: nowrap;
+    }
+    .pill:hover, .pill.active {
+      background: var(--green); color: #fff; border-color: var(--green);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      max-width: 1280px; margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ── FLASH DEALS BANNER ── */
+    .flash-banner {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      display: flex; align-items: center; gap: 20px;
+      margin-bottom: 20px;
+      overflow: hidden; position: relative;
+    }
+    .flash-banner::after {
+      content: '🔥';
+      position: absolute; right: 24px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 64px; opacity: 0.15;
+    }
+    .flash-title {
+      font-size: 1.1rem; font-weight: 800; color: #fff;
+    }
+    .flash-title em { color: var(--yellow); font-style: normal; }
+    .flash-subtitle { font-size: 13px; color: #9ca3af; margin-top: 2px; }
+    .flash-timer {
+      display: flex; gap: 6px; margin-left: 8px;
+    }
+    .timer-block {
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px; padding: 6px 10px;
+      text-align: center; min-width: 48px;
+    }
+    .timer-num {
+      font-size: 1.4rem; font-weight: 800; color: var(--yellow);
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-label { font-size: 10px; color: #9ca3af; }
+    .flash-cta {
+      margin-left: auto; background: var(--yellow);
+      color: #000; border: none; border-radius: 8px;
+      padding: 10px 20px; font-weight: 700; font-size: 14px;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: transform .15s;
+    }
+    .flash-cta:hover { transform: scale(1.04); }
+
+    /* ── TWO COLUMN LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* ── HERO BANNER (small, not blocking) ── */
+    .hero-small {
+      background: linear-gradient(135deg, var(--green) 0%, #004d25 100%);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .hero-small::after {
+      content: '🛍️';
+      position: absolute; right: 24px; bottom: -10px;
+      font-size: 100px; opacity: 0.2;
+    }
+    .hero-small h1 {
+      font-size: 1.6rem; font-weight: 800; line-height: 1.2;
+      max-width: 12ch;
+    }
+    .hero-small h1 em { color: var(--yellow); font-style: normal; }
+    .hero-small p { font-size: 14px; color: rgba(255,255,255,0.8); margin: 8px 0 16px; }
+    .hero-small .btn-shop {
+      background: var(--yellow); color: #000;
+      border: none; border-radius: 8px; padding: 10px 20px;
+      font-weight: 700; cursor: pointer; font-size: 14px;
+      display: inline-block; text-decoration: none;
+      transition: transform .15s;
+    }
+    .hero-small .btn-shop:hover { transform: scale(1.04); }
+
+    /* ── SIDEBAR PROMOS ── */
+    .promo-stack { display: flex; flex-direction: column; gap: 12px; }
+    .promo-card {
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative; overflow: hidden;
+      min-height: 100px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      cursor: pointer; transition: transform .15s;
+    }
+    .promo-card:hover { transform: scale(1.02); }
+    .promo-card h3 { font-size: 1rem; font-weight: 800; color: #fff; }
+    .promo-card p { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+    .promo-card.yellow { background: linear-gradient(135deg, #e67e00, #FFD000); }
+    .promo-card.blue   { background: linear-gradient(135deg, #1a56db, #3b82f6); }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 1.2rem; font-weight: 700;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block; width: 4px; height: 22px;
+      background: var(--green); border-radius: 2px;
+    }
+    .see-all {
+      font-size: 13px; color: var(--green); font-weight: 600;
+      text-decoration: none; display: flex; align-items: center; gap: 4px;
+    }
+    .see-all:hover { text-decoration: underline; }
+
+    /* ── PRODUCTS GRID ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: box-shadow .2s, transform .2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .product-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      transform: translateY(-2px);
+    }
+
+    .product-img-wrap {
+      position: relative;
+      background: #f8fafc;
+      height: 180px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 64px;
+      overflow: hidden;
+    }
+
+    .badge {
+      position: absolute; top: 8px; left: 8px;
+      font-size: 10px; font-weight: 700; padding: 3px 8px;
+      border-radius: 100px; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .badge-red   { background: var(--red); color: #fff; }
+    .badge-green { background: var(--green); color: #fff; }
+    .badge-yellow{ background: var(--yellow); color: #000; }
+    .badge-dark  { background: #1a1a2e; color: #fff; }
+
+    .wishlist-btn {
+      position: absolute; top: 8px; right: 8px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      border: none; cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .2s;
+      opacity: 0;
+    }
+    .product-card:hover .wishlist-btn { opacity: 1; }
+    .wishlist-btn:hover { transform: scale(1.2); }
+
+    .product-body { padding: 12px; }
+    .product-shop { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .product-name {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+      min-height: 36px;
+    }
+
+    .price-row {
+      display: flex; align-items: baseline; gap: 6px; margin-top: 8px;
+    }
+    .price-current {
+      font-size: 1.15rem; font-weight: 800; color: var(--text);
+    }
+    .price-old {
+      font-size: 12px; color: var(--muted); text-decoration: line-through;
+    }
+    .price-pct {
+      font-size: 11px; font-weight: 700; color: var(--red);
+    }
+
+    /* Stock bar */
+    .stock-bar-wrap {
+      margin-top: 8px;
+    }
+    .stock-label {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--muted); margin-bottom: 4px;
+    }
+    .stock-label span { color: var(--red); font-weight: 600; }
+    .stock-bar {
+      height: 4px; background: #fee2e2; border-radius: 2px; overflow: hidden;
+    }
+    .stock-bar-fill {
+      height: 100%; background: linear-gradient(90deg, var(--red), #ff6b6b);
+      border-radius: 2px; transition: width .5s ease;
+    }
+
+    /* Social proof */
+    .social-proof {
+      font-size: 11px; color: var(--muted); margin-top: 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .social-proof::before { content: '👁'; font-size: 12px; }
+
+    /* Stars */
+    .stars { color: var(--yellow2); font-size: 12px; margin-top: 6px; }
+    .stars span { color: var(--muted); font-size: 11px; }
+
+    /* Add to cart */
+    .add-btn {
+      width: 100%; margin-top: 10px;
+      background: var(--green); color: #fff;
+      border: none; border-radius: 8px; padding: 9px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: all .2s; font-family: 'Inter', sans-serif;
+    }
+    .add-btn:hover { background: var(--green2); }
+    .add-btn.added {
+      background: var(--yellow); color: #000;
+    }
+
+    /* ── FLASH DEALS ROW ── */
+    .deals-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .deal-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 14px;
+      border: 1.5px solid #fee2e2;
+      position: relative; overflow: hidden;
+      cursor: pointer; transition: box-shadow .2s, transform .2s;
+    }
+    .deal-card:hover { box-shadow: 0 6px 20px rgba(229,62,62,0.15); transform: translateY(-2px); }
+    .deal-emoji { font-size: 40px; text-align: center; display: block; }
+    .deal-name { font-size: 12px; font-weight: 600; margin-top: 8px; color: var(--text); }
+    .deal-price { font-size: 1.1rem; font-weight: 800; color: var(--red); }
+    .deal-old { font-size: 11px; text-decoration: line-through; color: var(--muted); }
+    .deal-pct {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--red); color: #fff;
+      font-size: 11px; font-weight: 800;
+      padding: 2px 7px; border-radius: 100px;
+    }
+
+    /* ── TRUST BAR ── */
+    .trust-bar {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .trust-icon { font-size: 24px; flex-shrink: 0; }
+    .trust-title { font-size: 13px; font-weight: 700; }
+    .trust-sub   { font-size: 11px; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text); color: #9ca3af;
+      padding: 40px 20px 20px;
+      margin-top: 40px;
+    }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px;
+    }
+    .footer-brand .logo { color: #fff; font-size: 1.3rem; margin-bottom: 10px; display: block; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; }
+    .footer-col h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 13px; color: #9ca3af; text-decoration: none; margin-bottom: 8px; transition: color .2s; }
+    .footer-col a:hover { color: var(--yellow); }
+    .footer-bottom {
+      max-width: 1280px; margin: 24px auto 0;
+      padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px;
+    }
+    .pay-icons { display: flex; gap: 8px; }
+    .pay-icon {
+      background: rgba(255,255,255,0.1); border-radius: 4px;
+      padding: 4px 10px; font-size: 11px; font-weight: 700; color: #fff;
+    }
+
+    /* ── URGENCY POPUP ── */
+    .urgency-toast {
+      position: fixed; bottom: 24px; left: 24px;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px; z-index: 999;
+      transform: translateX(-120%);
+      transition: transform .4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 280px;
+      border-left: 4px solid var(--green);
+    }
+    .urgency-toast.show { transform: translateX(0); }
+    .toast-icon { font-size: 24px; flex-shrink: 0; }
+    .toast-text strong { display: block; font-weight: 700; color: var(--text); }
+    .toast-text span { color: var(--muted); font-size: 12px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+      .promo-stack { flex-direction: row; }
+      .promo-card { min-height: 120px; }
+      .trust-bar { grid-template-columns: repeat(2, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .nav-links-desktop { display: none; }
+    }
+    @media (max-width: 600px) {
+      .nav-inner { padding: 10px 14px; gap: 10px; }
+      .logo { font-size: 1.3rem; }
+      .search-wrap select { display: none; }
+      .trust-bar { display: none; }
+      .flash-banner { flex-wrap: wrap; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .deals-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Urgency toast -->
+<div class="urgency-toast" id="toast">
+  <div class="toast-icon" id="toast-icon">🛒</div>
+  <div class="toast-text">
+    <strong id="toast-title">Iemand in Paramaribo</strong>
+    <span id="toast-sub">kocht dit 2 min geleden</span>
+  </div>
+</div>
+
+<!-- Top bar -->
+<div class="topbar">
+  🚚 Gratis bezorging boven SRD 200 &nbsp;|&nbsp; <span>Vandaag besteld = morgen in huis</span> &nbsp;|&nbsp; 🇸🇷 Heel Suriname
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">Bay<em>Sani</em><span>.com</span></a>
+    <div class="search-wrap">
+      <select>
+        <option>Alles</option>
+        <option>Elektronica</option>
+        <option>Mode</option>
+        <option>Supermarkt</option>
+        <option>Huis & Tuin</option>
+        <option>Beauty</option>
+      </select>
+      <input type="text" placeholder="Zoek in heel Suriname..." id="search-input"/>
+      <button onclick="doSearch()">🔍</button>
+    </div>
+    <div class="nav-actions">
+      <a href="#" class="nav-btn">
+        <span class="icon">👤</span>
+        <span>Inloggen</span>
+      </a>
+      <a href="#" class="nav-btn">
+        <span class="icon cart-badge" data-count="0" id="cart-icon">🛒</span>
+        <span>Winkelwagen</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Category pills -->
+<div class="cat-pills">
+  <div class="cat-pills-inner">
+    <button class="pill active" onclick="filterCat('all', this)">🏷️ Alle</button>
+    <button class="pill" onclick="filterCat('elektronica', this)">📱 Elektronica</button>
+    <button class="pill" onclick="filterCat('mode', this)">👗 Mode</button>
+    <button class="pill" onclick="filterCat('supermarkt', this)">🛒 Supermarkt</button>
+    <button class="pill" onclick="filterCat('beauty', this)">💄 Beauty</button>
+    <button class="pill" onclick="filterCat('sport', this)">⚽ Sport</button>
+    <button class="pill" onclick="filterCat('huis', this)">🏠 Huis & Tuin</button>
+    <button class="pill" onclick="filterCat('auto', this)">🚗 Auto</button>
+    <button class="pill" onclick="filterCat('deals', this)">🔥 Deals</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Flash deals countdown -->
+  <div class="flash-banner">
+    <div>
+      <div class="flash-title">⚡ Flash Sale — <em>Tot 70% korting</em></div>
+      <div class="flash-subtitle">Vandaag alleen — eindig over:</div>
+    </div>
+    <div class="flash-timer">
+      <div class="timer-block"><div class="timer-num" id="t-h">08</div><div class="timer-label">uur</div></div>
+      <div class="timer-block"><div class="timer-num" id="t-m">24</div><div class="timer-label">min</div></div>
+      <div class="timer-block"><div class="timer-num" id="t-s">00</div><div class="timer-label">sec</div></div>
+    </div>
+    <button class="flash-cta">Bekijk alle deals →</button>
+  </div>
+
+  <!-- Hero + promos -->
+  <div class="two-col">
+    <div class="hero-small">
+      <h1>Alles uit Suriname, <em>één plek</em></h1>
+      <p>Van Paramaribo tot Nickerie — de beste prijzen, direct bij jou thuis</p>
+      <a href="#producten" class="btn-shop">Nu winkelen →</a>
+    </div>
+    <div class="promo-stack">
+      <div class="promo-card yellow">
+        <div style="font-size:32px;position:absolute;top:12px;right:16px">👗</div>
+        <h3>Mode tot -50%</h3>
+        <p>Nieuwe collectie is binnen</p>
+      </div>
+      <div class="promo-card blue">
+        <div style="font-size:32px;position:absolute;top:12px;right:16px">📱</div>
+        <h3>Elektronica deals</h3>
+        <p>Vandaag extra scherp geprijsd</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <div class="trust-item">
+      <div class="trust-icon">🚚</div>
+      <div><div class="trust-title">Snelle bezorging</div><div class="trust-sub">Heel Suriname</div></div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🔒</div>
+      <div><div class="trust-title">Veilig betalen</div><div class="trust-sub">Visa, Mastercard, Cash</div></div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">↩️</div>
+      <div><div class="trust-title">Gratis retour</div><div class="trust-sub">Binnen 30 dagen</div></div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">💬</div>
+      <div><div class="trust-title">Klantenservice</div><div class="trust-sub">Ma-Za 8:00–20:00</div></div>
+    </div>
+  </div>
+
+  <!-- Flash deals small cards -->
+  <div style="margin-bottom: 24px;">
+    <div class="section-header">
+      <div class="section-title">⚡ Flash deals</div>
+      <a href="#" class="see-all">Alle deals →</a>
+    </div>
+    <div class="deals-row" id="deals-row">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Main products -->
+  <div id="producten" style="margin-bottom: 32px;">
+    <div class="section-header">
+      <div class="section-title">🔥 Populair nu</div>
+      <a href="#" class="see-all">Alles bekijken →</a>
+    </div>
+    <div class="products-grid" id="products-grid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- New arrivals -->
+  <div style="margin-bottom: 32px;">
+    <div class="section-header">
+      <div class="section-title">✨ Nieuw binnen</div>
+      <a href="#" class="see-all">Alles bekijken →</a>
+    </div>
+    <div class="products-grid" id="new-grid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="logo">Bay<em style="color:var(--yellow)">Sani</em>.com</a>
+      <p>Heel Suriname winkelt op één plek. Van Paramaribo tot Albina — altijd de beste prijs.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a href="#">Alle Producten</a>
+      <a href="#">Alle Winkels</a>
+      <a href="#">Flash Deals</a>
+      <a href="#">Nieuwe Artikelen</a>
+    </div>
+    <div class="footer-col">
+      <h4>Winkelier</h4>
+      <a href="#">Winkel Aanmelden</a>
+      <a href="#">Dashboard</a>
+      <a href="#">Catalogus Upload</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Over BaySani</a>
+      <a href="#">Contact</a>
+      <a href="#">Privacybeleid</a>
+      <a href="#">Voorwaarden</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 BaySani.com — Gemaakt met ❤️ voor Suriname</p>
+    <div class="pay-icons">
+      <span class="pay-icon">Visa</span>
+      <span class="pay-icon">MC</span>
+      <span class="pay-icon">Mopé</span>
+      <span class="pay-icon">Cash</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── CONFIG ──
+var BASE = 'https://jwctzyddaxweavqrttqr.supabase.co/rest/v1';
+var KEY  = 'sb_publishable_WFWd1ia-e2pwrpSt_IZ3xw_EO5CCb_s';
+var cartCount = 0;
+
+// ── FALLBACK DATA (als database leeg is) ──
+var DEMO = [
+  {name:'Nike Air Max 270', brand:'SportZone PBX', base_price:1050, sale_price:850, emoji:'👟', badge:'NIEUW', stars:4.8, reviews:124, stock_pct:25, viewers:12},
+  {name:'Samsung Galaxy A54 128GB', brand:'TechWorld', base_price:3600, sale_price:3200, emoji:'📱', badge:'-11%', stars:4.6, reviews:89, stock_pct:60, viewers:8},
+  {name:'Zomerjurk Bloemenprint', brand:'Modepaleis Nickerie', base_price:225, sale_price:180, emoji:'👗', badge:'-20%', stars:4.9, reviews:203, stock_pct:15, viewers:19},
+  {name:'Basmati Rijst 5kg', brand:'Kersten & Co', base_price:95, sale_price:null, emoji:'🛒', badge:'', stars:4.5, reviews:45, stock_pct:80, viewers:5},
+  {name:'Fenty Beauty Foundation', brand:'Beauty Palace', base_price:420, sale_price:null, emoji:'💄', badge:'NIEUW', stars:4.7, reviews:67, stock_pct:45, viewers:7},
+  {name:'Boormachine 750W', brand:'Bouwmarkt Wanica', base_price:800, sale_price:650, emoji:'🔧', badge:'DEAL', stars:4.4, reviews:31, stock_pct:30, viewers:4},
+  {name:'Bamboe Vloerkleed 160x230', brand:'Home & Living', base_price:1100, sale_price:null, emoji:'🛋️', badge:'', stars:4.6, reviews:18, stock_pct:70, viewers:3},
+  {name:'Leren Rugtas Donkerbruin', brand:'Bags & More', base_price:390, sale_price:null, emoji:'🎒', badge:'', stars:4.8, reviews:56, stock_pct:50, viewers:6},
+];
+
+var DEALS_DEMO = [
+  {name:'AirPods Pro', emoji:'🎧', price:1200, old:1800, pct:33},
+  {name:'Sneakers Adidas', emoji:'👟', price:650, old:950, pct:32},
+  {name:'Parfum Set', emoji:'🧴', price:280, old:450, pct:38},
+  {name:'Smart TV 43"', emoji:'📺', price:3500, old:5000, pct:30},
+  {name:'Yogamat Premium', emoji:'🧘', price:120, old:200, pct:40},
+  {name:'Gaming Headset', emoji:'🎮', price:480, old:750, pct:36},
+];
+
+// ── RENDER PRODUCT CARD ──
+function renderCard(p, i) {
+  var hasDiscount = p.sale_price && p.sale_price < p.base_price;
+  var price = hasDiscount ? p.sale_price : p.base_price;
+  var pct = hasDiscount ? Math.round((1 - p.sale_price/p.base_price)*100) : 0;
+  var emoji = p.emoji || ['📱','👟','👗','🛒','💄','🔧','🛋️','🎒','🍕','💊'][i % 10];
+  var badge = p.badge || (hasDiscount ? '-'+pct+'%' : '');
+  var stars = p.stars || (4 + Math.random()).toFixed(1);
+  var reviews = p.reviews || Math.floor(Math.random()*200 + 10);
+  var stockPct = p.stock_pct || Math.floor(Math.random()*70 + 10);
+  var viewers = p.viewers || Math.floor(Math.random()*20 + 2);
+  var badgeClass = badge === 'NIEUW' ? 'badge-green' : badge === 'DEAL' ? 'badge-yellow' : 'badge-red';
+
+  return '<div class="product-card" onclick="cardClick(this)">' +
+    '<div class="product-img-wrap">' + emoji +
+    (badge ? '<span class="badge ' + badgeClass + '">' + badge + '</span>' : '') +
+    '<button class="wishlist-btn" onclick="event.stopPropagation();wishlist(this)">🤍</button>' +
+    '</div>' +
+    '<div class="product-body">' +
+    '<div class="product-shop">🏪 ' + (p.brand || 'BaySani Winkel') + '</div>' +
+    '<div class="product-name">' + p.name + '</div>' +
+    '<div class="stars">★★★★' + (stars >= 4.5 ? '★' : '☆') + ' <span>' + stars + ' (' + reviews + ')</span></div>' +
+    '<div class="price-row">' +
+    '<span class="price-current">SRD ' + Number(price).toLocaleString() + '</span>' +
+    (hasDiscount ? '<span class="price-old">SRD ' + Number(p.base_price).toLocaleString() + '</span><span class="price-pct">-' + pct + '%</span>' : '') +
+    '</div>' +
+    (stockPct < 40 ? '<div class="stock-bar-wrap"><div class="stock-label"><span>🔥 Bijna uitverkocht!</span><span>' + stockPct + '% resterend</span></div><div class="stock-bar"><div class="stock-bar-fill" style="width:' + stockPct + '%"></div></div></div>' : '') +
+    '<div class="social-proof">' + viewers + ' mensen bekijken dit nu</div>' +
+    '<button class="add-btn" onclick="event.stopPropagation();addToCart(this)">+ Voeg toe aan winkelwagen</button>' +
+    '</div></div>';
+}
+
+// ── LOAD PRODUCTS FROM SUPABASE ──
+async function loadProducts() {
+  try {
+    var r = await fetch(BASE + '/products?select=name,base_price,sale_price,brand&is_active=eq.true&order=sold_count.desc&limit=8', {
+      headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
+    });
+    var data = await r.json();
+    var grid = document.getElementById('products-grid');
+    var items = (data && data.length > 0) ? data : DEMO;
+    grid.innerHTML = items.map(renderCard).join('');
+
+    // New arrivals (different order)
+    var r2 = await fetch(BASE + '/products?select=name,base_price,sale_price,brand&is_active=eq.true&order=created_at.desc&limit=4', {
+      headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
+    });
+    var data2 = await r2.json();
+    var newGrid = document.getElementById('new-grid');
+    var newItems = (data2 && data2.length > 0) ? data2 : DEMO.slice(4, 8);
+    newGrid.innerHTML = newItems.map(renderCard).join('');
+  } catch(e) {
+    document.getElementById('products-grid').innerHTML = DEMO.map(renderCard).join('');
+    document.getElementById('new-grid').innerHTML = DEMO.slice(4,8).map(renderCard).join('');
+  }
+}
+
+// ── RENDER DEALS ──
+function loadDeals() {
+  var row = document.getElementById('deals-row');
+  row.innerHTML = DEALS_DEMO.map(function(d) {
+    return '<div class="deal-card">' +
+      '<span class="deal-pct">-' + d.pct + '%</span>' +
+      '<span class="deal-emoji">' + d.emoji + '</span>' +
+      '<div class="deal-name">' + d.name + '</div>' +
+      '<div class="deal-price">SRD ' + d.price + '</div>' +
+      '<div class="deal-old">SRD ' + d.old + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+// ── COUNTDOWN TIMER ──
+function startTimer() {
+  var now = new Date();
+  var end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  function tick() {
+    var diff = end - new Date();
+    if (diff < 0) return;
+    var h = Math.floor(diff/3600000);
+    var m = Math.floor((diff%3600000)/60000);
+    var s = Math.floor((diff%60000)/1000);
+    document.getElementById('t-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('t-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('t-s').textContent = String(s).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// ── CART ──
+function addToCart(btn) {
+  btn.textContent = '✓ Toegevoegd!';
+  btn.classList.add('added');
+  cartCount++;
+  document.getElementById('cart-icon').setAttribute('data-count', cartCount);
+  setTimeout(function() {
+    btn.textContent = '+ Voeg toe aan winkelwagen';
+    btn.classList.remove('added');
+  }, 2000);
+}
+
+function wishlist(btn) {
+  btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+}
+
+function cardClick(card) { /* navigate to product page */ }
+
+// ── URGENCY TOASTS ──
+var toastMessages = [
+  {icon:'🛒', title:'Iemand in Paramaribo', sub:'kocht dit product 2 min geleden'},
+  {icon:'👀', title:'12 mensen bekijken', sub:'dit product op dit moment'},
+  {icon:'🔥', title:'Populair vandaag!', sub:'Al 34x verkocht deze week'},
+  {icon:'⚡', title:'Nog maar 3 op voorraad', sub:'Bestel snel voordat het uitverkocht is'},
+  {icon:'🎉', title:'Iemand in Nickerie', sub:'spaarde SRD 85 op dit product'},
+];
+var toastIdx = 0;
+function showToast() {
+  var msg = toastMessages[toastIdx % toastMessages.length];
+  toastIdx++;
+  var t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = msg.icon;
+  document.getElementById('toast-title').textContent = msg.title;
+  document.getElementById('toast-sub').textContent = msg.sub;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 4000);
+}
+setTimeout(function() {
+  showToast();
+  setInterval(showToast, 12000);
+}, 5000);
+
+// ── CATEGORY FILTER ──
+function filterCat(cat, btn) {
+  document.querySelectorAll('.pill').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+// ── SEARCH ──
+function doSearch() {
+  var q = document.getElementById('search-input').value;
+  if (q.trim()) alert('Zoeken naar: ' + q + '\n(Zoekresultaten pagina komt eraan!)');
+}
+document.getElementById('search-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doSearch();
+});
+
+// ── SCROLL REVEAL ──
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      e.target.style.opacity = 1;
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, {threshold: 0.1});
+
+// ── INIT ──
+loadProducts();
+loadDeals();
+startTimer();
+
+setTimeout(function() {
+  document.querySelectorAll('.product-card, .deal-card').forEach(function(el) {
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity .4s ease, transform .4s ease';
+    observer.observe(el);
+  });
+}, 100);
+</script>
+</body>
+</html>

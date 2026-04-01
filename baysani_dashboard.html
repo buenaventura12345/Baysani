@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — BaySani Winkeliers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#00A44E;--green2:#007A3A;--yellow:#FFD000;--yellow2:#FFA500;--red:#E53E3E;--blue:#3B82F6;--orange:#F97316;--bg:#F4F6F8;--white:#FFFFFF;--text:#1A1A2E;--muted:#6B7280;--border:#E5E7EB;--sidebar:240px;--radius:12px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--white);border-right:1.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;transition:transform .3s}
+    .sb-logo{padding:20px 20px 16px;border-bottom:1.5px solid var(--border)}
+    .sb-logo a{font-size:1.4rem;font-weight:800;text-decoration:none;color:var(--text)}
+    .sb-logo a em{color:var(--green);font-style:normal}
+    .sb-logo a span{color:var(--yellow2)}
+    .sb-logo-sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .sb-shop{padding:14px 20px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:10px}
+    .sb-avatar{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .sb-shop-name{font-weight:600;font-size:13px}
+    .sb-shop-status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;margin-top:2px}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .sb-nav{flex:1;padding:12px 0}
+    .sb-section{padding:6px 20px 4px;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px 20px;margin:2px 8px;border-radius:9px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;transition:all .2s;text-decoration:none;position:relative}
+    .sb-item:hover{background:#f0faf5;color:var(--text)}
+    .sb-item.active{background:#f0faf5;color:var(--green);font-weight:700}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:0 3px 3px 0;background:var(--green)}
+    .sb-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+    .sb-badge{margin-left:auto;background:var(--yellow);color:#000;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px}
+    .sb-badge.red{background:var(--red);color:#fff}
+    .sb-bottom{padding:12px 8px 20px;border-top:1.5px solid var(--border)}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+    /* TOPBAR */
+    .topbar{height:64px;background:var(--white);border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .topbar-left{display:flex;align-items:center;gap:12px}
+    .page-title{font-size:16px;font-weight:700}
+    .topbar-search{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:8px 14px;gap:8px}
+    .topbar-search input{background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:180px}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+    .icon-btn{width:38px;height:38px;border-radius:9px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;position:relative;transition:border-color .2s}
+    .icon-btn:hover{border-color:var(--green)}
+    .notif-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:var(--red);border-radius:50%;border:2px solid var(--white)}
+    .avatar-btn{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--green2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+
+    /* CONTENT */
+    .content{padding:24px;flex:1}
+    .panel{display:none;animation:fadeUp .3s ease both}
+    .panel.active{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* WELCOME BANNER */
+    .welcome-banner{background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%);border-radius:var(--radius);padding:24px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:14px;position:relative;overflow:hidden}
+    .welcome-banner::after{content:'📈';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.15}
+    .welcome-banner h2{font-size:1.2rem;font-weight:800;color:#fff}
+    .welcome-banner p{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
+    .btn-yellow{padding:10px 20px;background:var(--yellow);color:#000;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+    .btn-yellow:hover{background:var(--yellow2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,208,0,.3)}
+
+    /* ALERT STRIP */
+    .alert-strip{background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:20px;font-size:13px;color:#92400e;font-weight:600}
+    .alert-strip.green{background:#f0faf5;border-color:#d1fae5;color:var(--green2)}
+    .alert-strip.red{background:#fef2f2;border-color:#fecaca;color:var(--red)}
+
+    /* KPI CARDS */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+    .kpi-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px 22px;transition:all .2s;cursor:default}
+    .kpi-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+    .kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .kpi-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .kpi-icon.green{background:#f0faf5}
+    .kpi-icon.yellow{background:#fffde7}
+    .kpi-icon.blue{background:#eff6ff}
+    .kpi-icon.orange{background:#fff7ed}
+    .kpi-change{font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;padding:3px 8px;border-radius:100px}
+    .kpi-change.up{background:#f0faf5;color:var(--green)}
+    .kpi-change.down{background:#fef2f2;color:var(--red)}
+    .kpi-value{font-size:1.8rem;font-weight:800;line-height:1}
+    .kpi-label{font-size:12px;color:var(--muted);margin-top:4px}
+    .sparkline{display:flex;align-items:flex-end;gap:3px;height:28px;margin-top:12px}
+    .spark-bar{flex:1;border-radius:2px 2px 0 0;background:var(--border);transition:background .2s}
+    .spark-bar:last-child{background:var(--green)}
+    .kpi-card:hover .spark-bar:last-child{background:var(--yellow2)}
+
+    /* CHARTS ROW */
+    .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+    .chart-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px}
+    .chart-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+    .chart-title select{background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--muted);padding:5px 10px;font-size:12px;font-family:'Inter',sans-serif;outline:none;cursor:pointer}
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:130px}
+    .bc-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+    .bc-bar{width:100%;border-radius:6px 6px 0 0;background:var(--border);transition:all .3s;position:relative;cursor:pointer}
+    .bc-bar:hover{background:var(--green)}
+    .bc-bar.highlight{background:var(--yellow2)}
+    .bc-label{font-size:10px;color:var(--muted)}
+    .bc-tooltip{position:absolute;top:-28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:6px;padding:3px 8px;font-size:11px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}
+    .bc-bar:hover .bc-tooltip{opacity:1}
+    .donut-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+    svg.donut{width:120px;height:120px}
+    .donut-legend{width:100%;display:flex;flex-direction:column;gap:8px}
+    .dl-item{display:flex;align-items:center;gap:8px;font-size:12px}
+    .dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .dl-label{color:var(--muted);flex:1}
+    .dl-val{font-weight:700}
+
+    /* ORDERS TABLE */
+    .table-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+    .table-header{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:10px}
+    .table-header h3{font-size:14px;font-weight:700}
+    .table-filters{display:flex;gap:6px;flex-wrap:wrap}
+    .filter-btn{padding:5px 12px;border-radius:7px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+    .filter-btn:hover,.filter-btn.active{border-color:var(--green);color:var(--green);background:#f0faf5}
+    .btn-export{padding:6px 14px;background:#fffde7;border:1.5px solid #fcd34d;color:#92400e;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+    .btn-export:hover{background:#fef3c7}
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:10px 16px;text-align:left;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:1.5px solid var(--border);background:var(--bg)}
+    tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+    tbody tr:hover{background:#f0faf5}
+    tbody tr:last-child{border-bottom:none}
+    td{padding:12px 16px;font-size:13px}
+    .order-id{font-weight:700;font-size:12px;color:var(--green)}
+    .order-product{display:flex;align-items:center;gap:8px}
+    .order-thumb{width:36px;height:36px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid var(--border)}
+    .order-name{font-weight:600;font-size:13px}
+    .order-var{font-size:11px;color:var(--muted)}
+    .status-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .status-pill.betaald{background:#f0faf5;color:var(--green)}
+    .status-pill.verwerkt{background:#fffde7;color:#92400e}
+    .status-pill.bezorgd{background:#eff6ff;color:var(--blue)}
+    .status-pill.geannul{background:#fef2f2;color:var(--red)}
+    .status-dot-sm{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+    /* PRODUCTS PANEL */
+    .products-toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+    .search-bar{display:flex;align-items:center;background:var(--white);border:1.5px solid var(--border);border-radius:9px;padding:8px 14px;gap:8px}
+    .search-bar input{background:none;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;width:200px}
+    .btn-green{padding:10px 18px;background:var(--green);color:#fff;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+    .btn-green:hover{background:var(--green2)}
+    .product-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+    .product-row:hover{background:#f0faf5}
+    .prod-img{width:48px;height:48px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border);flex-shrink:0}
+    .prod-info{flex:1}
+    .prod-name{font-weight:600;font-size:13px}
+    .prod-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .prod-price{font-weight:800;font-size:14px;text-align:right}
+    .prod-stock{font-size:11px;text-align:right;margin-top:2px}
+    .prod-stock.low{color:var(--red);font-weight:600}
+    .prod-stock.ok{color:var(--green)}
+    .prod-actions{display:flex;gap:6px}
+    .action-btn{padding:6px 12px;border-radius:7px;border:1.5px solid var(--border);background:var(--white);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;transition:all .2s}
+    .action-btn:hover{border-color:var(--green);color:var(--green)}
+    .action-btn.del:hover{border-color:var(--red);color:var(--red)}
+
+    /* SETTINGS */
+    .settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+    .setting-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px}
+    .setting-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-label{font-size:13px;font-weight:500}
+    .toggle-sub{font-size:11px;color:var(--muted)}
+    .toggle{width:40px;height:22px;background:var(--border);border-radius:11px;cursor:pointer;position:relative;transition:background .25s;flex-shrink:0;border:none}
+    .toggle.on{background:var(--green)}
+    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .toggle.on::after{left:21px}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;animation:fadeIn .2s}
+    .modal-overlay.show{display:flex}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .modal{background:var(--white);border-radius:16px;padding:28px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:popUp .3s cubic-bezier(.34,1.4,.64,1)}
+    @keyframes popUp{from{opacity:0;transform:scale(.92) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .modal-title{font-size:1.1rem;font-weight:800}
+    .modal-close{width:32px;height:32px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted);transition:all .15s}
+    .modal-close:hover{color:var(--text);border-color:var(--text)}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+    .form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:all .2s}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,164,78,.1);background:var(--white)}
+    .form-group textarea{resize:vertical;min-height:80px}
+    .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .upload-area{border:2px dashed #d1fae5;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:#f0faf5}
+    .upload-area:hover{border-color:var(--green);background:#e8f5ef}
+    .upload-icon{font-size:32px;margin-bottom:8px}
+    .upload-text{font-size:13px;color:var(--muted)}
+    .upload-text strong{color:var(--green)}
+    .btn-submit-modal{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-top:8px}
+    .btn-submit-modal:hover{background:var(--green2)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:13px;z-index:999;transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:300px;border-left:4px solid var(--green)}
+    .toast.show{transform:translateX(0)}
+
+    /* SECTION HEADER */
+    .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .section-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+    .section-title::before{content:'';display:inline-block;width:4px;height:18px;background:var(--green);border-radius:2px}
+    .view-all{font-size:12px;color:var(--green);cursor:pointer;text-decoration:none;font-weight:600}
+
+    /* GOAL PROGRESS */
+    .goal-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+    .goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .goal-title{font-size:14px;font-weight:700}
+    .goal-pct{font-size:18px;font-weight:800;color:var(--green)}
+    .goal-bar{height:12px;background:var(--bg);border-radius:6px;overflow:hidden;margin-bottom:8px}
+    .goal-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--yellow2));border-radius:6px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+    .goal-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+    @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.charts-row{grid-template-columns:1fr}}
+    @media(max-width:600px){.content{padding:16px}.kpi-grid{grid-template-columns:1fr 1fr}.topbar-search{display:none}}
+  </style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">🎉</span>
+  <span id="toast-msg">Nieuwe bestelling ontvangen!</span>
+</div>
+
+<!-- MODAL: Product toevoegen -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Nieuw product toevoegen</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-group"><label>Productnaam</label><input type="text" placeholder="Bijv. Nike Air Max 270" id="m-name"/></div>
+    <div class="form-row2">
+      <div class="form-group"><label>Prijs (SRD)</label><input type="number" placeholder="850" id="m-price"/></div>
+      <div class="form-group"><label>Voorraad</label><input type="number" placeholder="25" id="m-stock"/></div>
+    </div>
+    <div class="form-group"><label>Categorie</label>
+      <select><option>Elektronica</option><option>Mode</option><option>Supermarkt</option><option>Beauty</option><option>Sport</option><option>Huis & Tuin</option></select>
+    </div>
+    <div class="form-group"><label>Beschrijving</label><textarea placeholder="Korte productbeschrijving..."></textarea></div>
+    <div class="upload-area" onclick="alert('Foto upload — koppeling met Supabase Storage komt eraan!')">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text"><strong>Klik om foto te uploaden</strong><br>PNG, JPG tot 5MB</div>
+    </div>
+    <button class="btn-submit-modal" onclick="saveProduct()">✅ Product opslaan</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="index.html">Bay<em>Sani</em><span>.com</span></a>
+    <div class="sb-logo-sub">Winkeliers Portaal</div>
+  </div>
+  <div class="sb-shop">
+    <div class="sb-avatar">🏪</div>
+    <div>
+      <div class="sb-shop-name">SportZone Paramaribo</div>
+      <div class="sb-shop-status"><span class="status-dot"></span> Online & actief</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Hoofdmenu</div>
+    <a class="sb-item active" onclick="showPanel('dashboard',this)"><span class="sb-icon">📊</span> Dashboard</a>
+    <a class="sb-item" onclick="showPanel('orders',this)"><span class="sb-icon">📦</span> Bestellingen <span class="sb-badge red">5</span></a>
+    <a class="sb-item" onclick="showPanel('products',this)"><span class="sb-icon">🛍️</span> Producten <span class="sb-badge">84</span></a>
+    <a class="sb-item" onclick="showPanel('analytics',this)"><span class="sb-icon">📈</span> Statistieken</a>
+    <div class="sb-section" style="margin-top:8px">Beheer</div>
+    <a class="sb-item" onclick="showPanel('customers',this)"><span class="sb-icon">👥</span> Klanten</a>
+    <a class="sb-item" onclick="showPanel('payments',this)"><span class="sb-icon">💳</span> Betalingen</a>
+    <a class="sb-item" onclick="showPanel('settings',this)"><span class="sb-icon">⚙️</span> Instellingen</a>
+    <div class="sb-section" style="margin-top:8px">Account</div>
+    <a class="sb-item" href="index.html"><span class="sb-icon">🏠</span> Naar BaySani</a>
+    <a class="sb-item" href="baysani_login.html"><span class="sb-icon">🚪</span> Uitloggen</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button onclick="toggleSidebar()" style="background:none;border:none;cursor:pointer;font-size:20px;display:none" id="menu-btn">☰</button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" placeholder="Zoek in dashboard..."/>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="showToast('📦 5 nieuwe bestellingen wachten op bevestiging!','var(--yellow2)')">
+        🔔<span class="notif-dot"></span>
+      </div>
+      <div class="icon-btn">💬</div>
+      <div class="avatar-btn">🧑</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ DASHBOARD PANEL ═══ -->
+    <div class="panel active" id="panel-dashboard">
+
+      <div class="welcome-banner">
+        <div>
+          <div class="welcome-banner h2" style="font-size:1.2rem;font-weight:800;color:#fff">Goedemorgen, SportZone! 👋</div>
+          <p style="color:rgba(255,255,255,.75);font-size:13px;margin-top:4px">Je hebt vandaag al <strong style="color:var(--yellow)">SRD <span id="todayRevenue">0</span></strong> omzet gedraaid</p>
+        </div>
+        <button class="btn-yellow" onclick="openModal()">+ Product toevoegen</button>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="alert-strip red">⚠️ 5 bestellingen wachten op bevestiging — <strong style="cursor:pointer;text-decoration:underline" onclick="showPanel('orders',document.querySelectorAll('.sb-item')[1])">Bekijk nu →</strong></div>
+
+      <!-- MAANDDOEL -->
+      <div class="goal-card">
+        <div class="goal-header">
+          <div class="goal-title">🎯 Maanddoel — April 2025</div>
+          <div class="goal-pct" id="goalPct">0%</div>
+        </div>
+        <div class="goal-bar"><div class="goal-fill" id="goalFill" style="width:0%"></div></div>
+        <div class="goal-labels"><span>SRD 0</span><span id="goalCurrent">SRD 0 / SRD 25.000</span><span>SRD 25.000</span></div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon green">💰</div>
+            <div class="kpi-change up" id="rev-change">▲ 0%</div>
+          </div>
+          <div class="kpi-value" id="kpi-rev">SRD 0</div>
+          <div class="kpi-label">Omzet deze maand</div>
+          <div class="sparkline" id="spark-rev"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon yellow">📦</div>
+            <div class="kpi-change up" id="ord-change">▲ 0%</div>
+          </div>
+          <div class="kpi-value" id="kpi-ord">0</div>
+          <div class="kpi-label">Bestellingen deze maand</div>
+          <div class="sparkline" id="spark-ord"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon blue">👁️</div>
+            <div class="kpi-change up">▲ 34%</div>
+          </div>
+          <div class="kpi-value" id="kpi-views">0</div>
+          <div class="kpi-label">Productweergaven</div>
+          <div class="sparkline" id="spark-views"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon orange">⭐</div>
+            <div class="kpi-change up">▲ 0.2</div>
+          </div>
+          <div class="kpi-value">4.8</div>
+          <div class="kpi-label">Gemiddelde beoordeling</div>
+          <div class="sparkline" id="spark-rating"></div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">
+            Omzet per dag
+            <select onchange="updateChart()"><option>Deze maand</option><option>Vorige maand</option><option>Afgelopen 3 maanden</option></select>
+          </div>
+          <div class="bar-chart" id="barChart"></div>
+          <div style="display:flex;justify-content:space-around;margin-top:8px;font-size:10px;color:var(--muted)" id="barLabels"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Omzet per categorie</div>
+          <div class="donut-wrap">
+            <svg class="donut" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#E5E7EB" stroke-width="18"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#00A44E" stroke-width="18" stroke-dasharray="127 155" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#FFD000" stroke-width="18" stroke-dasharray="63 219" stroke-dashoffset="-127" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#3B82F6" stroke-width="18" stroke-dasharray="45 237" stroke-dashoffset="-190" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#F97316" stroke-width="18" stroke-dasharray="20 262" stroke-dashoffset="-235" transform="rotate(-90 60 60)"/>
+              <text x="60" y="64" text-anchor="middle" font-size="13" font-weight="800" fill="#1A1A2E" font-family="Inter">84%</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="dl-item"><div class="dl-dot" style="background:#00A44E"></div><div class="dl-label">Schoenen</div><div class="dl-val">45%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#FFD000"></div><div class="dl-label">Kleding</div><div class="dl-val">22%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#3B82F6"></div><div class="dl-label">Accessoires</div><div class="dl-val">16%</div></div>
+              <div class="dl-item"><div class="dl-dot" style="background:#F97316"></div><div class="dl-label">Overig</div><div class="dl-val">17%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <div class="section-header">
+        <div class="section-title">Recente bestellingen</div>
+        <a class="view-all" onclick="showPanel('orders',document.querySelectorAll('.sb-item')[1])">Alle bestellingen →</a>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Vandaag</h3>
+          <button class="btn-export">📥 Exporteren</button>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Klant</th><th>Bedrag</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr onclick="showToast('📦 Order FY-2025-000124 geselecteerd','var(--green)')">
+              <td><div class="order-id">FY-2025-000124</div><div style="font-size:10px;color:var(--muted)">10 min geleden</div></td>
+              <td><div class="order-product"><div class="order-thumb">👟</div><div><div class="order-name">Nike Air Max 270</div><div class="order-var">Maat 41 · Zwart</div></div></div></td>
+              <td>Shanti M.</td><td style="font-weight:700">SRD 850</td>
+              <td><span class="status-pill betaald"><span class="status-dot-sm"></span>Betaald</span></td>
+            </tr>
+            <tr>
+              <td><div class="order-id">FY-2025-000123</div><div style="font-size:10px;color:var(--muted)">1 uur geleden</div></td>
+              <td><div class="order-product"><div class="order-thumb">👕</div><div><div class="order-name">Adidas Hoodie</div><div class="order-var">Maat L · Wit</div></div></div></td>
+              <td>Kevin J.</td><td style="font-weight:700">SRD 320</td>
+              <td><span class="status-pill verwerkt"><span class="status-dot-sm"></span>Verwerkt</span></td>
+            </tr>
+            <tr>
+              <td><div class="order-id">FY-2025-000122</div><div style="font-size:10px;color:var(--muted)">3 uur geleden</div></td>
+              <td><div class="order-product"><div class="order-thumb">🥿</div><div><div class="order-name">Puma Suede Classic</div><div class="order-var">Maat 39 · Zwart</div></div></div></td>
+              <td>Priya R.</td><td style="font-weight:700">SRD 540</td>
+              <td><span class="status-pill bezorgd"><span class="status-dot-sm"></span>Bezorgd</span></td>
+            </tr>
+            <tr>
+              <td><div class="order-id">FY-2025-000121</div><div style="font-size:10px;color:var(--muted)">Gisteren</div></td>
+              <td><div class="order-product"><div class="order-thumb">👟</div><div><div class="order-name">New Balance 574</div><div class="order-var">Maat 42 · Grijs</div></div></div></td>
+              <td>Ravi S.</td><td style="font-weight:700">SRD 760</td>
+              <td><span class="status-pill geannul"><span class="status-dot-sm"></span>Geannuleerd</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ ORDERS PANEL ═══ -->
+    <div class="panel" id="panel-orders">
+      <div class="alert-strip">⚡ 5 bestellingen wachten op jouw bevestiging</div>
+      <div class="table-card">
+        <div class="table-header">
+          <h3>Alle bestellingen</h3>
+          <div class="table-filters">
+            <button class="filter-btn active">Alle</button>
+            <button class="filter-btn">Nieuw (5)</button>
+            <button class="filter-btn">Verwerkt</button>
+            <button class="filter-btn">Bezorgd</button>
+            <button class="filter-btn">Geannuleerd</button>
+          </div>
+          <button class="btn-export">📥 Export</button>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Product</th><th>Klant</th><th>District</th><th>Bedrag</th><th>Status</th><th>Actie</th></tr></thead>
+          <tbody>
+            <tr><td><div class="order-id">FY-2025-000124</div><div style="font-size:10px;color:var(--muted)">10 min</div></td><td><div class="order-product"><div class="order-thumb">👟</div><div><div class="order-name">Nike Air Max 270</div></div></div></td><td>Shanti M.</td><td>Paramaribo</td><td style="font-weight:700">SRD 850</td><td><span class="status-pill betaald"><span class="status-dot-sm"></span>Betaald</span></td><td><button class="action-btn" onclick="showToast('✅ Bestelling bevestigd!','var(--green)')">Bevestig</button></td></tr>
+            <tr><td><div class="order-id">FY-2025-000123</div></td><td><div class="order-product"><div class="order-thumb">👕</div><div><div class="order-name">Adidas Hoodie</div></div></div></td><td>Kevin J.</td><td>Wanica</td><td style="font-weight:700">SRD 320</td><td><span class="status-pill verwerkt"><span class="status-dot-sm"></span>Verwerkt</span></td><td><button class="action-btn">Details</button></td></tr>
+            <tr><td><div class="order-id">FY-2025-000122</div></td><td><div class="order-product"><div class="order-thumb">🥿</div><div><div class="order-name">Puma Suede</div></div></div></td><td>Priya R.</td><td>Paramaribo</td><td style="font-weight:700">SRD 540</td><td><span class="status-pill bezorgd"><span class="status-dot-sm"></span>Bezorgd</span></td><td><button class="action-btn">Details</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PRODUCTS PANEL ═══ -->
+    <div class="panel" id="panel-products">
+      <div class="products-toolbar">
+        <div class="search-bar"><span>🔍</span><input type="text" placeholder="Zoek product..."/></div>
+        <button class="btn-green" onclick="openModal()">+ Nieuw product</button>
+      </div>
+      <div class="table-card" style="border-radius:var(--radius)">
+        <div class="product-row"><div class="prod-img">👟</div><div class="prod-info"><div class="prod-name">Nike Air Max 270 — Zwart/Wit</div><div class="prod-meta">Schoenen · SKU: NK-270-BW</div></div><div><div class="prod-price">SRD 850</div><div class="prod-stock low">⚠️ Nog 7 op voorraad</div></div><div class="prod-actions"><button class="action-btn">✏️ Bewerk</button><button class="action-btn del">🗑️</button></div></div>
+        <div class="product-row"><div class="prod-img">👕</div><div class="prod-info"><div class="prod-name">Adidas Hoodie — Wit</div><div class="prod-meta">Kleding · SKU: AD-HD-W</div></div><div><div class="prod-price">SRD 320</div><div class="prod-stock ok">✅ 23 op voorraad</div></div><div class="prod-actions"><button class="action-btn">✏️ Bewerk</button><button class="action-btn del">🗑️</button></div></div>
+        <div class="product-row"><div class="prod-img">🥿</div><div class="prod-info"><div class="prod-name">Puma Suede Classic — Zwart</div><div class="prod-meta">Schoenen · SKU: PM-SD-BK</div></div><div><div class="prod-price">SRD 540</div><div class="prod-stock ok">✅ 15 op voorraad</div></div><div class="prod-actions"><button class="action-btn">✏️ Bewerk</button><button class="action-btn del">🗑️</button></div></div>
+        <div class="product-row"><div class="prod-img">👟</div><div class="prod-info"><div class="prod-name">New Balance 574 — Grijs</div><div class="prod-meta">Schoenen · SKU: NB-574-GR</div></div><div><div class="prod-price">SRD 760</div><div class="prod-stock low">⚠️ Nog 3 op voorraad</div></div><div class="prod-actions"><button class="action-btn">✏️ Bewerk</button><button class="action-btn del">🗑️</button></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ ANALYTICS PANEL ═══ -->
+    <div class="panel" id="panel-analytics">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon green">📈</div><div class="kpi-change up">▲ 22%</div></div><div class="kpi-value">SRD 18.240</div><div class="kpi-label">Omzet deze maand</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon yellow">🛒</div><div class="kpi-change up">▲ 18%</div></div><div class="kpi-value">SRD 425</div><div class="kpi-label">Gemiddelde orderwaarde</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon blue">🔄</div><div class="kpi-change up">▲ 8%</div></div><div class="kpi-value">34%</div><div class="kpi-label">Terugkerende klanten</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon orange">💡</div><div class="kpi-change down">▼ 2%</div></div><div class="kpi-value">3.2%</div><div class="kpi-label">Conversieratio</div></div>
+      </div>
+      <div class="chart-card"><div class="chart-title">Top 5 best verkopende producten</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span>👟</span><div style="flex:1">Nike Air Max 270</div><div style="width:120px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:85%;height:100%;background:var(--green);border-radius:4px"></div></div><strong>SRD 6.800</strong></div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span>🥿</span><div style="flex:1">Puma Suede Classic</div><div style="width:120px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:62%;height:100%;background:var(--yellow2);border-radius:4px"></div></div><strong>SRD 4.320</strong></div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span>👟</span><div style="flex:1">New Balance 574</div><div style="width:120px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:48%;height:100%;background:var(--blue);border-radius:4px"></div></div><strong>SRD 3.040</strong></div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span>👕</span><div style="flex:1">Adidas Hoodie</div><div style="width:120px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:35%;height:100%;background:var(--orange);border-radius:4px"></div></div><strong>SRD 2.560</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CUSTOMERS/PAYMENTS/SETTINGS PANELS ═══ -->
+    <div class="panel" id="panel-customers"><div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">👥</div><div style="font-size:16px;font-weight:700">Klantenoverzicht</div><div style="font-size:13px;margin-top:8px">Database koppeling komt in de volgende stap</div></div></div>
+    <div class="panel" id="panel-payments"><div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">💳</div><div style="font-size:16px;font-weight:700">Betalingsoverzicht</div><div style="font-size:13px;margin-top:8px">Database koppeling komt in de volgende stap</div></div></div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="panel-settings">
+      <div class="settings-grid">
+        <div class="setting-card">
+          <div class="setting-title">🏪 Winkelinstellingen</div>
+          <div class="toggle-row"><div><div class="toggle-label">Winkel online</div><div class="toggle-sub">Klanten kunnen jouw winkel zien</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Bestellingen accepteren</div><div class="toggle-sub">Nieuwe bestellingen ontvangen</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">WhatsApp meldingen</div><div class="toggle-sub">Melding bij nieuwe bestelling</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        </div>
+        <div class="setting-card">
+          <div class="setting-title">🚚 Bezorging</div>
+          <div class="toggle-row"><div><div class="toggle-label">Bezorging aan huis</div><div class="toggle-sub">Heel Suriname bezorgen</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Afhalen bij winkel</div><div class="toggle-sub">Klant haalt zelf op</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Express bezorging</div><div class="toggle-sub">Zelfde dag levering (+SRD 40)</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+        </div>
+        <div class="setting-card">
+          <div class="setting-title">💳 Betaalmethoden</div>
+          <div class="toggle-row"><div><div class="toggle-label">Cash bij levering</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Mopé Wallet</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Visa / Mastercard</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+        </div>
+        <div class="setting-card">
+          <div class="setting-title">🔔 Meldingen</div>
+          <div class="toggle-row"><div><div class="toggle-label">Nieuwe bestelling</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Lage voorraad</div><div class="toggle-sub">Waarschuwing onder 5 stuks</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+          <div class="toggle-row"><div><div class="toggle-label">Nieuwe recensie</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// PANEL NAVIGATION
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
+  document.getElementById('panel-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  var titles = {dashboard:'Dashboard',orders:'Bestellingen',products:'Producten',analytics:'Statistieken',customers:'Klanten',payments:'Betalingen',settings:'Instellingen'};
+  document.getElementById('pageTitle').textContent = titles[name] || name;
+}
+
+// SIDEBAR TOGGLE MOBILE
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// TOAST
+function showToast(msg, color) {
+  var t = document.getElementById('toast');
+  t.style.borderLeftColor = color || 'var(--green)';
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')}, 3500);
+}
+
+// MODAL
+function openModal(){document.getElementById('productModal').classList.add('show')}
+function closeModal(){document.getElementById('productModal').classList.remove('show')}
+document.getElementById('productModal').addEventListener('click', function(e){if(e.target===this) closeModal()});
+function saveProduct(){
+  var name = document.getElementById('m-name').value;
+  var price = document.getElementById('m-price').value;
+  if(!name||!price){alert('Vul naam en prijs in!');return;}
+  closeModal();
+  showToast('✅ "'+name+'" toegevoegd voor SRD '+price+'!','var(--green)');
+}
+
+// ANIMATE KPIs
+function animateKPIs() {
+  var revTarget = 18240, ordTarget = 43, viewTarget = 2847;
+  var duration = 1800, steps = 60;
+  var revStep = revTarget/steps, ordStep = ordTarget/steps, viewStep = viewTarget/steps;
+  var i = 0;
+  var timer = setInterval(function(){
+    i++;
+    document.getElementById('kpi-rev').textContent = 'SRD '+ Math.round(revStep*i).toLocaleString();
+    document.getElementById('kpi-ord').textContent = Math.round(ordStep*i);
+    document.getElementById('kpi-views').textContent = Math.round(viewStep*i).toLocaleString();
+    document.getElementById('todayRevenue').textContent = Math.round(1240/steps*i).toLocaleString();
+    var pct = Math.round((revStep*i/25000)*100);
+    document.getElementById('goalPct').textContent = pct+'%';
+    document.getElementById('goalFill').style.width = pct+'%';
+    document.getElementById('goalCurrent').textContent = 'SRD '+Math.round(revStep*i).toLocaleString()+' / SRD 25.000';
+    if(i===steps){
+      clearInterval(timer);
+      document.getElementById('rev-change').textContent = '▲ 22%';
+      document.getElementById('ord-change').textContent = '▲ 18%';
+    }
+  }, duration/steps);
+}
+
+// SPARKLINES
+function buildSparkline(id, data, color) {
+  var el = document.getElementById(id);
+  if(!el) return;
+  var max = Math.max.apply(null, data);
+  el.innerHTML = data.map(function(v, i){
+    var h = Math.round((v/max)*100);
+    var isLast = i===data.length-1;
+    return '<div class="spark-bar" style="height:'+h+'%;background:'+(isLast?color:'var(--border)')+'"></div>';
+  }).join('');
+}
+
+// BAR CHART
+function updateChart() {
+  var data = [8,12,6,15,9,18,22,14,19,25,17,21,16,24,20,28,22,30,18,24,26,32,28,35,30,38,33,41,36,43];
+  var labels = ['1','5','10','15','20','25','30'];
+  var chart = document.getElementById('barChart');
+  var lblEl = document.getElementById('barLabels');
+  if(!chart) return;
+  chart.innerHTML = data.map(function(v,i){
+    var h = Math.round((v/43)*100);
+    var isLast = i===data.length-1;
+    return '<div class="bc-group"><div class="bc-bar '+(isLast?'highlight':'')+'" style="height:'+h+'%"><div class="bc-tooltip">SRD '+(v*120)+'</div></div><div class="bc-label"></div></div>';
+  }).join('');
+  if(lblEl) lblEl.innerHTML = labels.map(function(l){return '<span>'+l+'</span>'}).join('');
+}
+
+// NEW ORDER TOASTS
+var toastMsgs = [
+  '📦 Nieuwe bestelling: Nike Air Max — SRD 850',
+  '🎉 Kevin J. plaatste een bestelling van SRD 320',
+  '⭐ Priya R. gaf je 5 sterren!',
+  '📦 Nieuwe bestelling: Adidas Hoodie — SRD 320',
+  '🔥 Je product "Nike Air Max" is trending vandaag!',
+];
+var toastIdx = 0;
+function scheduledToasts() {
+  setTimeout(function(){
+    showToast(toastMsgs[toastIdx % toastMsgs.length]);
+    toastIdx++;
+    setInterval(function(){
+      showToast(toastMsgs[toastIdx % toastMsgs.length]);
+      toastIdx++;
+    }, 14000);
+  }, 5000);
+}
+
+// FILTER BUTTONS
+document.querySelectorAll('.filter-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    btn.closest('.table-filters').querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+  });
+});
+
+// INIT
+animateKPIs();
+buildSparkline('spark-rev', [8,12,9,15,11,18,14,22,17,25], 'var(--green)');
+buildSparkline('spark-ord', [3,5,4,7,5,8,6,9,8,11], 'var(--yellow2)');
+buildSparkline('spark-views', [120,180,140,220,160,280,200,320,260,380], 'var(--blue)');
+buildSparkline('spark-rating', [4.5,4.6,4.5,4.7,4.6,4.8,4.7,4.8,4.8,4.8], 'var(--orange)');
+updateChart();
+scheduledToasts();
+</script>
+</body>
+</html>

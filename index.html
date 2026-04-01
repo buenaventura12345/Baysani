@@ -498,7 +498,7 @@
 <!-- Nav -->
 <nav>
   <div class="nav-inner">
-    <a href="#" class="logo">Bay<em>Sani</em><span>.com</span></a>
+    <a href="index.html" class="logo">Bay<em>Sani</em><span>.com</span></a>
     <div class="search-wrap">
       <select>
         <option>Alles</option>
@@ -512,11 +512,11 @@
       <button onclick="doSearch()">🔍</button>
     </div>
     <div class="nav-actions">
-      <a href="#" class="nav-btn">
+      <a href="baysani_login.html" class="nav-btn">
         <span class="icon">👤</span>
         <span>Inloggen</span>
       </a>
-      <a href="#" class="nav-btn">
+      <a href="baysani_checkout.html" class="nav-btn">
         <span class="icon cart-badge" data-count="0" id="cart-icon">🛒</span>
         <span>Winkelwagen</span>
       </a>
@@ -552,7 +552,7 @@
       <div class="timer-block"><div class="timer-num" id="t-m">24</div><div class="timer-label">min</div></div>
       <div class="timer-block"><div class="timer-num" id="t-s">00</div><div class="timer-label">sec</div></div>
     </div>
-    <button class="flash-cta">Bekijk alle deals →</button>
+    <button class="flash-cta" onclick="window.location.href='baysani_product.html'">Bekijk alle deals →</button>
   </div>
 
   <!-- Hero + promos -->
@@ -560,7 +560,7 @@
     <div class="hero-small">
       <h1>Alles uit Suriname, <em>één plek</em></h1>
       <p>Van Paramaribo tot Nickerie — de beste prijzen, direct bij jou thuis</p>
-      <a href="#producten" class="btn-shop">Nu winkelen →</a>
+      <a href="#producten" class="btn-shop" style="display:inline-block;text-decoration:none;">Nu winkelen →</a>
     </div>
     <div class="promo-stack">
       <div class="promo-card yellow">
@@ -600,7 +600,7 @@
   <div style="margin-bottom: 24px;">
     <div class="section-header">
       <div class="section-title">⚡ Flash deals</div>
-      <a href="#" class="see-all">Alle deals →</a>
+      <a href="baysani_login.html" class="see-all">Alle deals →</a>
     </div>
     <div class="deals-row" id="deals-row">
       <!-- filled by JS -->
@@ -611,7 +611,7 @@
   <div id="producten" style="margin-bottom: 32px;">
     <div class="section-header">
       <div class="section-title">🔥 Populair nu</div>
-      <a href="#" class="see-all">Alles bekijken →</a>
+      <a href="baysani_login.html" class="see-all">Alles bekijken →</a>
     </div>
     <div class="products-grid" id="products-grid">
       <!-- filled by JS -->
@@ -622,7 +622,7 @@
   <div style="margin-bottom: 32px;">
     <div class="section-header">
       <div class="section-title">✨ Nieuw binnen</div>
-      <a href="#" class="see-all">Alles bekijken →</a>
+      <a href="baysani_login.html" class="see-all">Alles bekijken →</a>
     </div>
     <div class="products-grid" id="new-grid">
       <!-- filled by JS -->
@@ -635,29 +635,29 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <a href="#" class="logo">Bay<em style="color:var(--yellow)">Sani</em>.com</a>
+      <a href="index.html" class="logo">Bay<em style="color:var(--yellow)">Sani</em>.com</a>
       <p>Heel Suriname winkelt op één plek. Van Paramaribo tot Albina — altijd de beste prijs.</p>
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
-      <a href="#">Alle Producten</a>
-      <a href="#">Alle Winkels</a>
-      <a href="#">Flash Deals</a>
-      <a href="#">Nieuwe Artikelen</a>
+      <a href="baysani_login.html">Alle Producten</a>
+      <a href="baysani_login.html">Alle Winkels</a>
+      <a href="baysani_login.html">Flash Deals</a>
+      <a href="baysani_login.html">Nieuwe Artikelen</a>
     </div>
     <div class="footer-col">
       <h4>Winkelier</h4>
-      <a href="#">Winkel Aanmelden</a>
-      <a href="#">Dashboard</a>
-      <a href="#">Catalogus Upload</a>
-      <a href="#">FAQ</a>
+      <a href="baysani_login.html">Winkel Aanmelden</a>
+      <a href="baysani_login.html">Dashboard</a>
+      <a href="baysani_login.html">Catalogus Upload</a>
+      <a href="baysani_login.html">FAQ</a>
     </div>
     <div class="footer-col">
       <h4>Info</h4>
-      <a href="#">Over BaySani</a>
-      <a href="#">Contact</a>
-      <a href="#">Privacybeleid</a>
-      <a href="#">Voorwaarden</a>
+      <a href="baysani_login.html">Over BaySani</a>
+      <a href="baysani_login.html">Contact</a>
+      <a href="baysani_login.html">Privacybeleid</a>
+      <a href="baysani_login.html">Voorwaarden</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -767,6 +767,7 @@ function loadDeals() {
       '<div class="deal-old">SRD ' + d.old + '</div>' +
       '</div>';
   }).join('');
+  document.querySelectorAll('.deal-card').forEach(function(c){c.onclick=function(){window.location.href='baysani_product.html';}});
 }
 
 // ── COUNTDOWN TIMER ──
@@ -788,6 +789,8 @@ function startTimer() {
 
 // ── CART ──
 function addToCart(btn) {
+  cartCount++;
+  document.getElementById('cart-icon').setAttribute('data-count', cartCount);
   btn.textContent = '✓ Toegevoegd!';
   btn.classList.add('added');
   cartCount++;
@@ -802,7 +805,7 @@ function wishlist(btn) {
   btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
 }
 
-function cardClick(card) { /* navigate to product page */ }
+function cardClick(card) { window.location.href = "baysani_product.html"; }
 
 // ── URGENCY TOASTS ──
 var toastMessages = [

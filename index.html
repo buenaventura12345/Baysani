@@ -679,6 +679,7 @@ var cartCount = 0;
 
 // ── FALLBACK DATA (als database leeg is) ──
 var DEMO = [
+  {id:'demo-1',
   {name:'Nike Air Max 270', brand:'SportZone PBX', base_price:1050, sale_price:850, emoji:'👟', badge:'NIEUW', stars:4.8, reviews:124, stock_pct:25, viewers:12},
   {name:'Samsung Galaxy A54 128GB', brand:'TechWorld', base_price:3600, sale_price:3200, emoji:'📱', badge:'-11%', stars:4.6, reviews:89, stock_pct:60, viewers:8},
   {name:'Zomerjurk Bloemenprint', brand:'Modepaleis Nickerie', base_price:225, sale_price:180, emoji:'👗', badge:'-20%', stars:4.9, reviews:203, stock_pct:15, viewers:19},
@@ -707,11 +708,12 @@ function renderCard(p, i) {
   var badge = p.badge || (hasDiscount ? '-'+pct+'%' : '');
   var stars = p.stars || (4 + Math.random()).toFixed(1);
   var reviews = p.reviews || Math.floor(Math.random()*200 + 10);
-  var stockPct = p.stock_pct || Math.floor(Math.random()*70 + 10);
+  var stockPct = p.stock_pct !== undefined ? p.stock_pct : Math.floor(Math.random()*70 + 10);
   var viewers = p.viewers || Math.floor(Math.random()*20 + 2);
   var badgeClass = badge === 'NIEUW' ? 'badge-green' : badge === 'DEAL' ? 'badge-yellow' : 'badge-red';
+  var productUrl = p.id ? 'baysani_product.html?id=' + p.id : 'baysani_product.html';
 
-  return '<div class="product-card" onclick="cardClick(this)">' +
+  return '<div class="product-card" onclick="window.location.href=\''+productUrl+'\'">' +
     '<div class="product-img-wrap">' + emoji +
     (badge ? '<span class="badge ' + badgeClass + '">' + badge + '</span>' : '') +
     '<button class="wishlist-btn" onclick="event.stopPropagation();wishlist(this)">🤍</button>' +
@@ -733,7 +735,7 @@ function renderCard(p, i) {
 // ── LOAD PRODUCTS FROM SUPABASE ──
 async function loadProducts() {
   try {
-    var r = await fetch(BASE + '/products?select=name,base_price,sale_price,brand&is_active=eq.true&order=sold_count.desc&limit=8', {
+    var r = await fetch(BASE + '/products?select=id,name,base_price,sale_price,brand,slug,stock_total&is_active=eq.true&order=sold_count.desc&limit=8', {
       headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
     });
     var data = await r.json();
@@ -742,7 +744,7 @@ async function loadProducts() {
     grid.innerHTML = items.map(renderCard).join('');
 
     // New arrivals (different order)
-    var r2 = await fetch(BASE + '/products?select=name,base_price,sale_price,brand&is_active=eq.true&order=created_at.desc&limit=4', {
+    var r2 = await fetch(BASE + '/products?select=id,name,base_price,sale_price,brand,slug,stock_total&is_active=eq.true&order=created_at.desc&limit=4', {
       headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
     });
     var data2 = await r2.json();
@@ -805,7 +807,7 @@ function wishlist(btn) {
   btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
 }
 
-function cardClick(card) { window.location.href = "baysani_product.html"; }
+function cardClick(card) { /* handled per card */ }
 
 // ── URGENCY TOASTS ──
 var toastMessages = [

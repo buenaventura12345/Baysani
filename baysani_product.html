@@ -245,12 +245,12 @@
   <div class="nav-inner">
     <a href="index.html" class="logo">Bay<em>Sani</em><span>.com</span></a>
     <div class="search-wrap">
-      <input type="text" placeholder="Zoek in heel Suriname..." id="search-input" onkeydown="if(event.key==='Enter')window.location.href='index.html'"/>
-      <button onclick="window.location.href='index.html'">🔍</button>
+      <input type="text" placeholder="Zoek in heel Suriname..."/>
+      <button>🔍</button>
     </div>
     <div class="nav-actions">
-      <a href="baysani_login.html" class="nav-btn"><span class="icon">👤</span><span>Inloggen</span></a>
-      <a href="baysani_checkout.html" class="nav-btn"><span class="icon cart-icon" data-count="0" id="cart-icon">🛒</span><span>Winkelwagen</span></a>
+      <a href="#" class="nav-btn"><span class="icon">👤</span><span>Inloggen</span></a>
+      <a href="#" class="nav-btn"><span class="icon cart-icon" data-count="0" id="cart-icon">🛒</span><span>Winkelwagen</span></a>
     </div>
   </div>
 </nav>
@@ -542,11 +542,11 @@
   <div class="related-section">
     <div class="section-title">Vergelijkbare producten</div>
     <div class="related-grid">
-      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Nike Air Force 1 — Wit</div><div class="rel-price">SRD 720</div></div></div>
-      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Adidas Stan Smith</div><div class="rel-price">SRD 680</div></div></div>
-      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">🥿</div><div class="rel-body"><div class="rel-shop">🏪 Bags & More</div><div class="rel-name">Puma Suede Classic</div><div class="rel-price">SRD 540</div></div></div>
-      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">New Balance 574</div><div class="rel-price">SRD 760</div></div></div>
-      <div class="rel-card" onclick="window.location.href='baysani_product.html'"><div class="rel-img">🥾</div><div class="rel-body"><div class="rel-shop">🏪 OutdoorSuri</div><div class="rel-name">Timberland 6-Inch Boot</div><div class="rel-price">SRD 1.200</div></div></div>
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Nike Air Force 1 — Wit</div><div class="rel-price">SRD 720</div></div></div>
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Adidas Stan Smith</div><div class="rel-price">SRD 680</div></div></div>
+      <div class="rel-card"><div class="rel-img">🥿</div><div class="rel-body"><div class="rel-shop">🏪 Bags & More</div><div class="rel-name">Puma Suede Classic</div><div class="rel-price">SRD 540</div></div></div>
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">New Balance 574</div><div class="rel-price">SRD 760</div></div></div>
+      <div class="rel-card"><div class="rel-img">🥾</div><div class="rel-body"><div class="rel-shop">🏪 OutdoorSuri</div><div class="rel-name">Timberland 6-Inch Boot</div><div class="rel-price">SRD 1.200</div></div></div>
     </div>
   </div>
 
@@ -558,6 +558,101 @@
 
 <script>
 var qty = 1, cartCount = 0;
+var BASE = 'https://jwctzyddaxweavqrttqr.supabase.co/rest/v1';
+var KEY  = 'sb_publishable_WFWd1ia-e2pwrpSt_IZ3xw_EO5CCb_s';
+
+// ── LAAD PRODUCT UIT DATABASE ──
+async function loadProductFromDB() {
+  var params = new URLSearchParams(window.location.search);
+  var productId = params.get('id');
+
+  if (!productId || productId.startsWith('demo')) return; // gebruik demo data
+
+  try {
+    var r = await fetch(BASE + '/products?id=eq.' + productId + '&select=id,name,description,base_price,sale_price,brand,stock_total,rating,sold_count&limit=1', {
+      headers: {'apikey': KEY, 'Authorization': 'Bearer ' + KEY}
+    });
+    var data = await r.json();
+    if (!data || data.length === 0) return;
+
+    var p = data[0];
+
+    // Update pagina titel
+    document.title = p.name + ' — BaySani.com';
+
+    // Update productnaam
+    var titleEl = document.querySelector('h1');
+    if (titleEl) titleEl.textContent = p.name;
+
+    // Update prijs
+    var priceEl = document.querySelector('.price-main');
+    if (priceEl) priceEl.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
+
+    // Update oude prijs
+    if (p.sale_price && p.sale_price < p.base_price) {
+      var oldEl = document.querySelector('.price-old');
+      if (oldEl) oldEl.textContent = 'SRD ' + Number(p.base_price).toLocaleString();
+      var saveEl = document.querySelector('.price-save');
+      if (saveEl) saveEl.textContent = '-' + Math.round((1 - p.sale_price/p.base_price)*100) + '%';
+      var subEl = document.querySelector('.price-sub');
+      if (subEl) subEl.innerHTML = 'Je spaart <span>SRD ' + (p.base_price - p.sale_price) + '</span> met deze deal';
+    }
+
+    // Update beschrijving
+    if (p.description) {
+      var descEl = document.querySelector('.tab-content p');
+      if (descEl) descEl.textContent = p.description;
+    }
+
+    // Update merk
+    if (p.brand) {
+      var brandEl = document.querySelector('.shop-link');
+      if (brandEl) brandEl.textContent = '🏪 ' + p.brand;
+    }
+
+    // Update product naam in buy box titel
+    var titleEl2 = document.querySelector('.modal-title');
+
+    // Update stock
+    if (p.stock_total !== null) {
+      var stockNum = document.querySelector('.stock-num');
+      if (stockNum) stockNum.textContent = 'Nog ' + p.stock_total + ' op voorraad';
+      var stockFill = document.querySelector('.stock-fill');
+      if (stockFill) {
+        var pct = Math.min(100, Math.round((p.stock_total / 50) * 100));
+        stockFill.style.width = pct + '%';
+      }
+      var buystockEl = document.querySelector('.buy-box-stock');
+      if (buystockEl && p.stock_total < 10) {
+        buystockEl.textContent = '⚠️ Nog maar ' + p.stock_total + ' stuks beschikbaar!';
+      }
+    }
+
+    // Update rating
+    if (p.rating) {
+      var ratingEl = document.querySelector('.rating-num');
+      if (ratingEl) ratingEl.textContent = p.rating;
+    }
+
+    // Update sold count
+    if (p.sold_count) {
+      var soldEl = document.querySelector('.sold-badge');
+      if (soldEl) soldEl.textContent = '🔥 ' + p.sold_count + '+ verkocht';
+    }
+
+    // Update breadcrumb
+    var breadcrumbLast = document.querySelector('.breadcrumb span:last-child');
+    if (breadcrumbLast) breadcrumbLast.textContent = p.name;
+
+    // Update buy box prijs
+    var boxPrice = document.querySelector('.buy-box-price');
+    if (boxPrice) boxPrice.textContent = 'SRD ' + Number(p.sale_price || p.base_price).toLocaleString();
+
+    console.log('Product geladen:', p.name);
+  } catch(e) {
+    console.log('Kon product niet laden, gebruik demo data:', e);
+  }
+}
 
 // Countdown timer
 function startTimer() {
@@ -643,7 +738,7 @@ function addToCart(btn) {
 }
 
 function buyNow() {
-  window.location.href = 'baysani_checkout.html';
+  window.location.href = 'checkout.html';
 }
 
 function toggleWish(btn) {
@@ -684,6 +779,7 @@ function showToast() {
 setTimeout(function() { showToast(); setInterval(showToast, 10000); }, 4000);
 
 // Init
+loadProductFromDB();
 startTimer();
 deliveryCountdown();
 liveViewers();

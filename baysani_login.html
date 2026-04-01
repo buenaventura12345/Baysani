@@ -59,7 +59,7 @@
     .input-wrap{position:relative}
     .i-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
     .i-check{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:14px;opacity:0;transition:opacity .25s;color:var(--green)}
-    input,select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px 13px 42px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .2s}
+    input,select{-webkit-text-fill-color:#1A1A2E !important;width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px 13px 42px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .2s}
     input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,164,78,.1);background:var(--white)}
     input.valid{border-color:rgba(0,164,78,.5)}
     input.valid~.i-check{opacity:1}
@@ -221,12 +221,12 @@
         <div class="otp-block" id="otpBlock">
           <div class="otp-sent-msg">📲 Code gestuurd naar je WhatsApp!</div>
           <div class="otp-row">
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpBack(event,0)"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpBack(event,1)"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpBack(event,2)"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpBack(event,3)"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpBack(event,4)"/>
-            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpBack(event,5)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpBack(event,0)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpBack(event,1)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpBack(event,2)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpBack(event,3)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpBack(event,4)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpBack(event,5)" style="color:#000 !important;-webkit-text-fill-color:#000 !important;background:#fff !important;"/>
           </div>
           <div class="otp-resend">
             <span style="color:var(--muted)">Geen code ontvangen?</span>

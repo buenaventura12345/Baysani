@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inloggen — BaySani.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#00A44E;--green2:#007A3A;--yellow:#FFD000;--yellow2:#FFA500;--red:#E53E3E;--bg:#F4F6F8;--white:#FFFFFF;--text:#1A1A2E;--muted:#6B7280;--border:#E5E7EB;--radius:14px}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:var(--bg)}
+
+    /* LEFT PANEL */
+    .left{background:linear-gradient(160deg,#0a2a14 0%,#061208 100%);padding:3rem 4rem;display:flex;flex-direction:column;justify-content:center;position:sticky;top:0;height:100vh;overflow:hidden;position:relative}
+    .left::before{content:'';position:absolute;bottom:-120px;left:-120px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,94,.15) 0%,transparent 70%);pointer-events:none}
+    .left::after{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,208,0,.08) 0%,transparent 70%);pointer-events:none}
+
+    .left-logo{font-size:1.8rem;font-weight:800;background:linear-gradient(90deg,#00c45e,#FFD000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;display:inline-block;margin-bottom:.4rem}
+    .left-logo-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:2.5rem}
+    .left-headline{font-size:clamp(1.8rem,2.8vw,2.6rem);font-weight:800;line-height:1.1;color:#fff;margin-bottom:1rem}
+    .left-headline em{font-style:normal;background:linear-gradient(90deg,var(--yellow),#00c45e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .left-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;max-width:38ch;margin-bottom:2rem}
+
+    .benefits{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+    .benefit{display:flex;align-items:center;gap:12px;background:rgba(0,164,78,.08);border:1px solid rgba(0,164,78,.2);border-radius:10px;padding:12px 14px;transition:border-color .2s;cursor:default}
+    .benefit:hover{border-color:rgba(0,196,94,.4)}
+    .b-icon{font-size:20px;flex-shrink:0}
+    .b-text strong{display:block;font-size:13px;color:#fff;font-weight:600;margin-bottom:2px}
+    .b-text span{font-size:12px;color:rgba(255,255,255,.45)}
+
+    .live-bar{background:rgba(255,208,0,.08);border:1px solid rgba(255,208,0,.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:#fff}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);animation:blink 1.5s infinite;flex-shrink:0}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .live-bar strong{color:var(--yellow)}
+
+    /* RIGHT PANEL */
+    .right{padding:3rem 4rem;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;overflow-y:auto;background:var(--white)}
+
+    .auth-box{width:100%;max-width:420px}
+
+    /* TAB SWITCHER */
+    .tab-sw{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:24px;border:1.5px solid var(--border)}
+    .tab-sw-btn{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+    .tab-sw-btn.active{background:var(--yellow);color:#000;font-weight:700;box-shadow:0 2px 12px rgba(255,208,0,.3)}
+
+    /* METHOD TOGGLE */
+    .method-toggle{display:flex;gap:8px;margin-bottom:20px}
+    .method-btn{flex:1;padding:10px;border-radius:9px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .method-btn.active{border-color:var(--green);color:var(--green);background:#f0faf5}
+
+    .form-title{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:4px}
+    .form-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+    .form-sub strong{color:var(--green)}
+
+    /* FORM GROUPS */
+    .form-group{margin-bottom:14px}
+    label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+    .input-wrap{position:relative}
+    .i-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+    .i-check{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:14px;opacity:0;transition:opacity .25s;color:var(--green)}
+    input,select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px 13px 42px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:all .2s}
+    input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,164,78,.1);background:var(--white)}
+    input.valid{border-color:rgba(0,164,78,.5)}
+    input.valid~.i-check{opacity:1}
+    input.invalid{border-color:rgba(229,62,62,.5)}
+
+    /* PHONE */
+    .phone-row{display:flex;gap:8px}
+    .phone-pre{width:88px;flex-shrink:0;padding:13px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;cursor:pointer;transition:border-color .2s}
+    .phone-pre:focus{border-color:var(--green)}
+    .phone-main input{padding-left:14px}
+
+    /* OTP */
+    .otp-block{display:none}
+    .otp-block.show{display:block}
+    .otp-row{display:flex;gap:10px;justify-content:center;margin:16px 0 10px}
+    .otp-digit{width:52px;height:60px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);font-size:22px;font-weight:800;text-align:center;font-family:'Inter',sans-serif;outline:none;transition:all .2s}
+    .otp-digit:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,164,78,.12);background:var(--white)}
+    .otp-digit.filled{border-color:var(--green);background:#f0faf5}
+    .otp-sent-msg{background:#f0faf5;border:1px solid #d1fae5;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .otp-resend{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:16px}
+    .resend-btn{color:var(--green);font-weight:600;cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px}
+    .resend-btn:disabled{color:var(--muted);cursor:not-allowed}
+
+    /* PW STRENGTH */
+    .pw-strength{display:flex;gap:4px;align-items:center;margin-top:6px}
+    .pw-bar{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .3s}
+    .pw-label{font-size:11px;color:var(--muted);white-space:nowrap;min-width:48px;text-align:right}
+
+    /* SOCIAL LOGIN */
+    .divider-or{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:13px}
+    .divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+    .social-btns{display:flex;gap:8px;margin-bottom:4px}
+    .social-btn{flex:1;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text)}
+    .social-btn:hover{border-color:var(--green);background:#f0faf5}
+
+    /* SUBMIT BTN */
+    .btn-submit{width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+    .btn-submit::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+    .btn-submit:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,164,78,.3)}
+    .btn-submit:hover::before{left:160%}
+    .btn-submit.loading{background:var(--muted);cursor:not-allowed}
+
+    /* FORM CONTENT VISIBILITY */
+    .form-content{display:none}
+    .form-content.show{display:block}
+
+    /* ERROR */
+    .error-msg{font-size:12px;color:var(--red);margin-top:4px;display:none}
+    .error-msg.show{display:block}
+
+    /* SUCCESS OVERLAY */
+    .success-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:9999;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:20px;animation:fadeIn .4s ease}
+    .success-overlay.show{display:flex}
+    .success-icon{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--green),#00c45e);display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 0 0 16px rgba(0,164,78,.1),0 0 0 32px rgba(0,164,78,.05);animation:popIn .5s .1s cubic-bezier(.34,1.56,.64,1) both}
+    .success-title{font-size:2rem;font-weight:800;color:var(--text)}
+    .success-sub{color:var(--muted);font-size:15px;max-width:36ch;line-height:1.7}
+    .success-user{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 28px;font-weight:700;font-size:16px;color:var(--green)}
+    .confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .confetti-dot{position:absolute;border-radius:50%;animation:fall 2.5s ease-in forwards}
+
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    @keyframes fall{from{transform:translateY(-40px) rotate(0deg);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .auth-box{animation:slideUp .4s ease}
+
+    /* TRUST FOOTER */
+    .auth-trust{display:flex;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap}
+    .auth-trust-item{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+
+    @media(max-width:800px){body{grid-template-columns:1fr}.left{display:none}.right{padding:2rem 1.5rem}}
+  </style>
+</head>
+<body>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="confetti-wrap" id="confettiWrap"></div>
+  <div class="success-icon">🎉</div>
+  <div class="success-title" id="successTitle">Ingelogd!</div>
+  <div class="success-sub" id="successSub">Welkom terug bij BaySani! Je wordt doorgestuurd...</div>
+  <div class="success-user" id="successUser"></div>
+  <a href="index.html" style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;text-decoration:none;font-family:'Inter',sans-serif;margin-top:8px">Ga naar BaySani →</a>
+</div>
+
+<!-- LEFT PANEL -->
+<div class="left">
+  <a href="index.html" class="left-logo">BaySani.com</a>
+  <div class="left-logo-sub">Heel Suriname winkelt hier 🇸🇷</div>
+
+  <div class="left-headline">Jouw winkel,<br/><em>één account</em></div>
+  <div class="left-desc">Log in en bestel bij honderden winkels in Suriname. Volg je bestellingen, sla adressen op en ontdek persoonlijke deals.</div>
+
+  <div class="benefits">
+    <div class="benefit">
+      <span class="b-icon">🚚</span>
+      <div class="b-text"><strong>Gratis bezorging</strong><span>Bij bestellingen boven SRD 200</span></div>
+    </div>
+    <div class="benefit">
+      <span class="b-icon">⚡</span>
+      <div class="b-text"><strong>Flash deals voor leden</strong><span>Exclusieve kortingen alleen voor ingelogde gebruikers</span></div>
+    </div>
+    <div class="benefit">
+      <span class="b-icon">📦</span>
+      <div class="b-text"><strong>Bestelhistorie</strong><span>Volg al je bestellingen op één plek</span></div>
+    </div>
+    <div class="benefit">
+      <span class="b-icon">🔒</span>
+      <div class="b-text"><strong>Veilig & privé</strong><span>OTP-verificatie via telefoon — geen wachtwoord nodig</span></div>
+    </div>
+  </div>
+
+  <div class="live-bar">
+    <div class="live-dot"></div>
+    <span><strong id="liveCount">247</strong> mensen zijn nu actief op BaySani</span>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right">
+  <div class="auth-box">
+
+    <!-- TAB SWITCHER -->
+    <div class="tab-sw">
+      <button class="tab-sw-btn active" onclick="switchTab('login', this)">Inloggen</button>
+      <button class="tab-sw-btn" onclick="switchTab('register', this)">Registreren</button>
+    </div>
+
+    <!-- ── LOGIN ── -->
+    <div class="form-content show" id="tab-login">
+      <div class="form-title">Welkom terug 👋</div>
+      <div class="form-sub">Log in met je telefoonnummer of e-mail</div>
+
+      <!-- METHOD TOGGLE -->
+      <div class="method-toggle">
+        <button class="method-btn active" onclick="switchMethod('phone', this)">📱 Telefoon (OTP)</button>
+        <button class="method-btn" onclick="switchMethod('email', this)">✉️ E-mail</button>
+      </div>
+
+      <!-- PHONE LOGIN -->
+      <div id="phoneBlock">
+        <div class="form-group">
+          <label>Telefoonnummer</label>
+          <div class="phone-row">
+            <select class="phone-pre">
+              <option value="+597">🇸🇷 +597</option>
+              <option value="+31">🇳🇱 +31</option>
+              <option value="+1">🇺🇸 +1</option>
+            </select>
+            <div class="phone-main" style="flex:1;position:relative">
+              <input type="tel" id="loginPhone" placeholder="8xx-xxxx" oninput="validatePhone(this)" style="padding-left:14px"/>
+              <span class="i-check" style="right:13px;top:50%;transform:translateY(-50%);position:absolute">✓</span>
+            </div>
+          </div>
+          <div class="error-msg" id="phoneError">Voer een geldig nummer in (min. 7 cijfers)</div>
+        </div>
+
+        <!-- OTP BLOCK -->
+        <div class="otp-block" id="otpBlock">
+          <div class="otp-sent-msg">📲 Code gestuurd naar je WhatsApp!</div>
+          <div class="otp-row">
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,0)" onkeydown="otpBack(event,0)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,1)" onkeydown="otpBack(event,1)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,2)" onkeydown="otpBack(event,2)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,3)" onkeydown="otpBack(event,3)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,4)" onkeydown="otpBack(event,4)"/>
+            <input class="otp-digit" type="tel" maxlength="1" oninput="otpInput(this,5)" onkeydown="otpBack(event,5)"/>
+          </div>
+          <div class="otp-resend">
+            <span style="color:var(--muted)">Geen code ontvangen?</span>
+            <button class="resend-btn" id="resendBtn" onclick="resendOtp()" disabled>Wacht <span id="otpTimer">30</span>s</button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="phoneBtn" onclick="handlePhoneLogin()">
+          📲 Stuur verificatiecode
+        </button>
+      </div>
+
+      <!-- EMAIL LOGIN -->
+      <div id="emailBlock" style="display:none">
+        <div class="form-group">
+          <label>E-mailadres</label>
+          <div class="input-wrap">
+            <span class="i-icon">✉️</span>
+            <input type="email" id="loginEmail" placeholder="jij@email.com" oninput="validateEmail(this)"/>
+            <span class="i-check">✓</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Wachtwoord</label>
+          <div class="input-wrap">
+            <span class="i-icon">🔒</span>
+            <input type="password" id="loginPw" placeholder="••••••••" style="padding-right:44px"/>
+            <button onclick="togglePw('loginPw')" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-bottom:14px">
+          <a href="#" style="font-size:12px;color:var(--green);text-decoration:none;font-weight:600">Wachtwoord vergeten?</a>
+        </div>
+        <button class="btn-submit" onclick="handleEmailLogin()">🔐 Inloggen</button>
+      </div>
+
+      <div class="divider-or">of</div>
+
+      <div class="social-btns">
+        <button class="social-btn" onclick="socialLogin('Google')">🇬 Google</button>
+        <button class="social-btn" onclick="socialLogin('WhatsApp')">💬 WhatsApp</button>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">
+        Nog geen account? <button onclick="switchTab('register', document.querySelectorAll('.tab-sw-btn')[1])" style="background:none;border:none;color:var(--green);font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px">Registreer gratis →</button>
+      </div>
+    </div>
+
+    <!-- ── REGISTER ── -->
+    <div class="form-content" id="tab-register">
+      <div class="form-title">Account aanmaken 🇸🇷</div>
+      <div class="form-sub">Gratis registreren — begin meteen met winkelen bij <strong>honderden Surinaamse winkels</strong></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label>Voornaam</label>
+          <div class="input-wrap">
+            <span class="i-icon">👤</span>
+            <input type="text" placeholder="Shanti" oninput="liveValidate(this,2)"/>
+            <span class="i-check">✓</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Achternaam</label>
+          <div class="input-wrap">
+            <span class="i-icon">👤</span>
+            <input type="text" placeholder="Mahabier" oninput="liveValidate(this,2)"/>
+            <span class="i-check">✓</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Telefoonnummer (WhatsApp)</label>
+        <div class="phone-row">
+          <select class="phone-pre"><option>🇸🇷 +597</option><option>🇳🇱 +31</option><option>🇺🇸 +1</option></select>
+          <div class="phone-main" style="flex:1;position:relative">
+            <input type="tel" placeholder="8xx-xxxx" oninput="validatePhone(this)" style="padding-left:14px"/>
+            <span class="i-check" style="right:13px;top:50%;transform:translateY(-50%);position:absolute">✓</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>E-mailadres</label>
+        <div class="input-wrap">
+          <span class="i-icon">✉️</span>
+          <input type="email" placeholder="jij@email.com" oninput="validateEmail(this)"/>
+          <span class="i-check">✓</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Wachtwoord</label>
+        <div class="input-wrap">
+          <span class="i-icon">🔒</span>
+          <input type="password" id="regPw" placeholder="Min. 8 tekens" oninput="checkStrength(this)" style="padding-right:44px"/>
+          <button onclick="togglePw('regPw')" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px">👁</button>
+        </div>
+        <div class="pw-strength">
+          <div class="pw-bar" id="pwb1"></div>
+          <div class="pw-bar" id="pwb2"></div>
+          <div class="pw-bar" id="pwb3"></div>
+          <div class="pw-bar" id="pwb4"></div>
+          <span class="pw-label" id="pwLabel">—</span>
+        </div>
+      </div>
+
+      <div style="background:#f0faf5;border:1px solid #d1fae5;border-radius:10px;padding:12px 14px;font-size:12px;color:var(--green);margin-bottom:14px;display:flex;gap:8px">
+        <span>✅</span>
+        <span>Door te registreren ga je akkoord met onze <a href="#" style="color:var(--green);font-weight:700">voorwaarden</a> en <a href="#" style="color:var(--green);font-weight:700">privacybeleid</a>.</span>
+      </div>
+
+      <button class="btn-submit" onclick="handleRegister()">🎉 Account aanmaken — Gratis!</button>
+
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">
+        Al een account? <button onclick="switchTab('login', document.querySelectorAll('.tab-sw-btn')[0])" style="background:none;border:none;color:var(--green);font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px">Inloggen →</button>
+      </div>
+    </div>
+
+    <!-- TRUST FOOTER -->
+    <div class="auth-trust">
+      <span class="auth-trust-item">🔒 SSL-beveiligd</span>
+      <span class="auth-trust-item">📱 OTP verificatie</span>
+      <span class="auth-trust-item">🇸🇷 Gemaakt voor Suriname</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// TAB SWITCH
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-sw-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.form-content').forEach(function(c){c.classList.remove('show')});
+  if(btn) btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('show');
+}
+
+// METHOD SWITCH
+function switchMethod(method, btn) {
+  document.querySelectorAll('.method-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('phoneBlock').style.display = method==='phone' ? 'block' : 'none';
+  document.getElementById('emailBlock').style.display = method==='email' ? 'block' : 'none';
+}
+
+// VALIDATION
+function validatePhone(inp) {
+  var v = inp.value.replace(/\D/g,'');
+  inp.classList.toggle('valid', v.length >= 7);
+  inp.classList.toggle('invalid', v.length > 0 && v.length < 7);
+}
+function validateEmail(inp) {
+  var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+  inp.classList.toggle('valid', ok);
+  inp.classList.toggle('invalid', !ok && inp.value.length > 3);
+}
+function liveValidate(inp, min) {
+  var ok = inp.value.trim().length >= min;
+  inp.classList.toggle('valid', ok);
+  inp.classList.toggle('invalid', !ok && inp.value.length > 0);
+}
+
+// PASSWORD STRENGTH
+var pwColors = ['','#E53E3E','#FFD000','#00A44E','#00A44E'];
+var pwLabels = ['','Zwak','Matig','Goed','Sterk'];
+function checkStrength(inp) {
+  var v = inp.value, s = 0;
+  if(v.length>=8) s++;
+  if(/[A-Z]/.test(v)) s++;
+  if(/[0-9]/.test(v)) s++;
+  if(/[^A-Za-z0-9]/.test(v)) s++;
+  for(var i=1;i<=4;i++){
+    var b=document.getElementById('pwb'+i);
+    if(b) b.style.background = i<=s ? pwColors[s] : 'var(--border)';
+  }
+  var lbl = document.getElementById('pwLabel');
+  if(lbl){lbl.textContent=pwLabels[s]||'—';lbl.style.color=pwColors[s]||'var(--muted)'}
+}
+
+function togglePw(id) {
+  var inp = document.getElementById(id);
+  if(inp) inp.type = inp.type==='password'?'text':'password';
+}
+
+// PHONE OTP FLOW
+var otpSent = false, otpInterval, otpCountdown = 30;
+
+function handlePhoneLogin() {
+  var inp = document.getElementById('loginPhone');
+  var err = document.getElementById('phoneError');
+  if(!inp.classList.contains('valid')) {
+    if(err) err.classList.add('show');
+    inp.focus(); return;
+  }
+  if(err) err.classList.remove('show');
+
+  if(!otpSent) {
+    document.getElementById('otpBlock').classList.add('show');
+    var btn = document.getElementById('phoneBtn');
+    btn.innerHTML = '✅ Code bevestigen';
+    otpSent = true;
+    inp.disabled = true;
+    startOtpTimer();
+    setTimeout(function(){document.querySelectorAll('.otp-digit')[0].focus()},200);
+  } else {
+    var digits = Array.from(document.querySelectorAll('.otp-digit')).map(function(d){return d.value});
+    if(digits.join('').length===6) {
+      finishLogin('+597 '+inp.value);
+    } else {
+      document.querySelectorAll('.otp-digit').forEach(function(d){
+        d.style.borderColor='var(--red)';
+        setTimeout(function(){d.style.borderColor=''},1000);
+      });
+    }
+  }
+}
+
+function startOtpTimer() {
+  otpCountdown = 30;
+  var el = document.getElementById('otpTimer');
+  var btn = document.getElementById('resendBtn');
+  if(btn) btn.disabled = true;
+  otpInterval = setInterval(function(){
+    otpCountdown--;
+    if(el) el.textContent = otpCountdown;
+    if(otpCountdown<=0) {
+      clearInterval(otpInterval);
+      if(btn){btn.innerHTML='Opnieuw versturen';btn.disabled=false;}
+    }
+  }, 1000);
+}
+
+function resendOtp() {
+  document.querySelectorAll('.otp-digit').forEach(function(d){d.value='';d.classList.remove('filled')});
+  var btn = document.getElementById('resendBtn');
+  if(btn) btn.innerHTML='Wacht <span id="otpTimer">30</span>s';
+  startOtpTimer();
+  document.querySelectorAll('.otp-digit')[0].focus();
+}
+
+function otpInput(el, idx) {
+  el.value = el.value.replace(/\D/g,'').slice(-1);
+  if(el.value) el.classList.add('filled'); else el.classList.remove('filled');
+  var digits = document.querySelectorAll('.otp-digit');
+  if(el.value && idx<5) digits[idx+1].focus();
+  if(Array.from(digits).every(function(d){return d.value})) {
+    setTimeout(handlePhoneLogin, 300);
+  }
+}
+
+function otpBack(e, idx) {
+  if(e.key==='Backspace') {
+    var digits = document.querySelectorAll('.otp-digit');
+    if(!digits[idx].value && idx>0) digits[idx-1].focus();
+  }
+}
+
+// EMAIL LOGIN
+function handleEmailLogin() {
+  var btn = document.querySelector('#emailBlock .btn-submit');
+  btn.innerHTML = '⏳ Inloggen...'; btn.classList.add('loading');
+  setTimeout(function(){finishLogin(document.getElementById('loginEmail').value||'jij@email.com')}, 1200);
+}
+
+// REGISTER
+function handleRegister() {
+  var btn = document.querySelector('#tab-register .btn-submit');
+  btn.innerHTML = '⏳ Account aanmaken...'; btn.classList.add('loading');
+  setTimeout(function(){
+    document.getElementById('successTitle').textContent = 'Account aangemaakt! 🎉';
+    document.getElementById('successSub').textContent = 'Welkom bij BaySani! Je account is klaar. Begin nu met winkelen!';
+    document.getElementById('successUser').textContent = 'Welkom bij BaySani 🇸🇷';
+    spawnConfetti();
+    document.getElementById('successOverlay').classList.add('show');
+  }, 1400);
+}
+
+function socialLogin(provider) { finishLogin('Via '+provider); }
+
+function finishLogin(id) {
+  document.getElementById('successTitle').textContent = 'Ingelogd! 👋';
+  document.getElementById('successSub').textContent = 'Welkom terug bij BaySani! Je wordt doorgestuurd...';
+  document.getElementById('successUser').textContent = id;
+  spawnConfetti();
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+function spawnConfetti() {
+  var wrap = document.getElementById('confettiWrap');
+  var colors = ['#FFD000','#00A44E','#fff','#E53E3E','#3B82F6','#FFA500'];
+  for(var i=0;i<70;i++){
+    var dot = document.createElement('div');
+    dot.className = 'confetti-dot';
+    var size = (8+Math.random()*8)+'px';
+    dot.style.cssText = 'left:'+Math.random()*100+'%;top:-20px;background:'+colors[Math.floor(Math.random()*colors.length)]+';width:'+size+';height:'+size+';border-radius:'+(Math.random()>.5?'50%':'3px')+';animation-duration:'+(1.5+Math.random()*2)+'s;animation-delay:'+(Math.random()*.8)+'s';
+    wrap.appendChild(dot);
+  }
+}
+
+// LIVE USER COUNT
+var liveBase = 247;
+setInterval(function(){
+  liveBase = Math.max(200, Math.min(320, liveBase + (Math.random()>0.4?1:-1)));
+  var el = document.getElementById('liveCount');
+  if(el) el.textContent = liveBase;
+}, 3500);
+
+// MICRO-REWARDS
+document.querySelectorAll('input').forEach(function(inp){
+  inp.addEventListener('blur', function(){
+    if(inp.classList.contains('valid')){
+      inp.style.boxShadow = '0 0 0 3px rgba(0,164,78,.15)';
+      setTimeout(function(){inp.style.boxShadow=''},700);
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -310,7 +310,7 @@
 
       <!-- ITEMS -->
       <div class="order-item">
-        <div class="item-img">👟<span class="item-qty-badge">1</span></div>
+        <div class="item-img" style="cursor:pointer" onclick="window.location.href='baysani_product.html'">👟<span class="item-qty-badge">1</span></div>
         <div class="item-info">
           <div class="item-shop">🏪 SportZone Paramaribo</div>
           <div class="item-name">Nike Air Max 270 — Zwart/Wit</div>
@@ -319,7 +319,7 @@
         <div class="item-price">SRD 850</div>
       </div>
       <div class="order-item">
-        <div class="item-img">👗<span class="item-qty-badge">2</span></div>
+        <div class="item-img" style="cursor:pointer" onclick="window.location.href='baysani_product.html'">👗<span class="item-qty-badge">2</span></div>
         <div class="item-info">
           <div class="item-shop">🏪 Modepaleis Nickerie</div>
           <div class="item-name">Zomerjurk Bloemenprint</div>
@@ -485,6 +485,7 @@ function placeOrder(btn) {
     }
 
     document.getElementById('successOverlay').classList.add('show');
+    setTimeout(function(){ window.location.href = 'index.html'; }, 5000);
   }, 2000);
 }
 

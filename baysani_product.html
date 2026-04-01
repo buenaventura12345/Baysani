@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nike Air Max 270 — BaySani.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:#00A44E; --green2:#007A3A; --yellow:#FFD000; --yellow2:#FFA500;
+      --red:#E53E3E; --bg:#F4F6F8; --white:#FFFFFF; --text:#1A1A2E;
+      --muted:#6B7280; --border:#E5E7EB; --radius:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+
+    /* NAV */
+    .topbar{background:var(--green);padding:6px 0;text-align:center;font-size:13px;font-weight:600;color:#fff}
+    .topbar span{color:var(--yellow)}
+    nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:12px 20px}
+    .logo{font-size:1.6rem;font-weight:800;text-decoration:none;color:var(--text);white-space:nowrap;flex-shrink:0}
+    .logo em{color:var(--green);font-style:normal}
+    .logo span{color:var(--yellow2)}
+    .search-wrap{flex:1;display:flex;border:2px solid var(--green);border-radius:8px;overflow:hidden;max-width:600px}
+    .search-wrap input{flex:1;border:none;outline:none;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif}
+    .search-wrap button{background:var(--green);border:none;color:#fff;padding:0 20px;font-size:18px;cursor:pointer}
+    .nav-actions{display:flex;gap:12px;flex-shrink:0}
+    .nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);padding:4px 8px;border-radius:8px;text-decoration:none;transition:background .2s}
+    .nav-btn:hover{background:#f0faf5;color:var(--green)}
+    .nav-btn .icon{font-size:22px}
+    .cart-icon{position:relative}
+    .cart-icon::after{content:attr(data-count);position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+    /* BREADCRUMB */
+    .breadcrumb{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+    .breadcrumb a{color:var(--muted);text-decoration:none}
+    .breadcrumb a:hover{color:var(--green)}
+    .breadcrumb .sep{color:var(--border)}
+
+    /* MAIN */
+    .page-wrap{max-width:1280px;margin:0 auto;padding:0 20px 40px}
+
+    /* URGENCY TOP BANNER */
+    .urgency-banner{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+    .urgency-banner .fire{font-size:24px;flex-shrink:0}
+    .urgency-text{flex:1}
+    .urgency-text strong{color:#fff;font-size:14px;display:block}
+    .urgency-text span{color:#9ca3af;font-size:12px}
+    .urgency-timer{display:flex;gap:6px}
+    .t-block{background:rgba(255,255,255,0.1);border-radius:6px;padding:6px 10px;text-align:center;min-width:44px}
+    .t-num{font-size:1.2rem;font-weight:800;color:var(--yellow);font-variant-numeric:tabular-nums}
+    .t-lbl{font-size:10px;color:#9ca3af}
+
+    /* PRODUCT LAYOUT */
+    .product-layout{display:grid;grid-template-columns:1fr 1fr 320px;gap:28px;align-items:start}
+
+    /* GALLERY */
+    .gallery{position:sticky;top:88px}
+    .main-img{background:#f8fafc;border:1.5px solid var(--border);border-radius:16px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:120px;position:relative;overflow:hidden;margin-bottom:12px}
+    .img-badges{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px}
+    .img-badge{padding:4px 10px;border-radius:100px;font-size:11px;font-weight:700}
+    .img-badge.red{background:var(--red);color:#fff}
+    .img-badge.green{background:var(--green);color:#fff}
+    .wishlist-fab{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:var(--white);border:1.5px solid var(--border);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform .2s}
+    .wishlist-fab:hover{transform:scale(1.1)}
+    .share-row{display:flex;gap:8px;margin-top:12px}
+    .share-btn{flex:1;padding:8px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .share-btn:hover{border-color:var(--green);color:var(--green)}
+    .thumbs{display:flex;gap:8px;margin-top:12px}
+    .thumb{flex:1;aspect-ratio:1;background:#f8fafc;border:2px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .15s}
+    .thumb:hover,.thumb.active{border-color:var(--green);background:#f0faf5}
+
+    /* PRODUCT INFO */
+    .product-info{}
+    .shop-line{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+    .shop-link{color:var(--green);font-weight:600;font-size:13px;text-decoration:none}
+    .shop-link:hover{text-decoration:underline}
+    .verified-badge{background:#f0faf5;border:1px solid #d1fae5;color:var(--green);border-radius:100px;padding:2px 10px;font-size:11px;font-weight:600}
+    .shop-stars{color:var(--yellow2);font-size:12px}
+    h1{font-size:1.7rem;font-weight:800;line-height:1.2;margin-bottom:12px}
+    .rating-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    .stars-big{color:var(--yellow2);font-size:18px}
+    .rating-num{font-weight:700;font-size:14px}
+    .review-link{color:var(--green);font-size:13px;text-decoration:none}
+    .review-link:hover{text-decoration:underline}
+    .sold-badge{background:#f0faf5;color:var(--green);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:600}
+
+    /* PRICE */
+    .price-block{background:linear-gradient(135deg,#fff8e1,#fffde7);border:1.5px solid #ffd54f;border-radius:12px;padding:16px 20px;margin-bottom:16px}
+    .price-main{font-size:2.2rem;font-weight:800;color:var(--text)}
+    .price-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+    .price-old{font-size:1rem;color:var(--muted);text-decoration:line-through}
+    .price-save{background:var(--red);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700}
+    .price-sub{font-size:12px;color:var(--muted);margin-top:6px}
+    .price-sub span{color:var(--green);font-weight:600}
+
+    /* STOCK */
+    .stock-block{margin-bottom:16px}
+    .stock-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+    .stock-warn{color:var(--red);font-weight:700;display:flex;align-items:center;gap:4px}
+    .stock-num{color:var(--muted)}
+    .stock-bar{height:6px;background:#fee2e2;border-radius:3px;overflow:hidden}
+    .stock-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b6b);border-radius:3px;animation:stockPulse 2s ease-in-out infinite}
+    @keyframes stockPulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+    /* SOCIAL PROOF LIVE */
+    .live-proof{display:flex;align-items:center;gap:8px;background:#f0faf5;border:1px solid #d1fae5;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.2s ease-in-out infinite;flex-shrink:0}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .live-proof strong{color:var(--green)}
+
+    hr.divider{border:none;border-top:1.5px solid var(--border);margin:16px 0}
+
+    /* VARIANTS */
+    .variant-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+    .variant-label strong{color:var(--text);font-size:13px;text-transform:none;letter-spacing:0}
+    .size-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+    .size-btn{width:48px;height:48px;border-radius:9px;background:var(--white);border:1.5px solid var(--border);color:var(--text);font-size:13px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;font-weight:500}
+    .size-btn:hover{border-color:var(--green)}
+    .size-btn.active{background:var(--green);border-color:var(--green);color:#fff;font-weight:700}
+    .size-btn.out{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+    .color-row{display:flex;gap:8px;margin-bottom:16px}
+    .color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s}
+    .color-dot.active{border-color:var(--green);transform:scale(1.12);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--green)}
+
+    /* QTY */
+    .qty-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .qty-label{font-size:13px;color:var(--muted)}
+    .qty-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:9px;overflow:hidden}
+    .qty-btn{width:38px;height:38px;background:var(--bg);border:none;font-size:18px;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif}
+    .qty-btn:hover{background:#e5e7eb}
+    .qty-num{padding:0 16px;font-weight:700;font-size:15px;min-width:40px;text-align:center}
+
+    /* CTA BUTTONS */
+    .cta-stack{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+    .btn-cart{background:var(--green);color:#fff;border:none;border-radius:10px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;width:100%}
+    .btn-cart:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,164,78,.3)}
+    .btn-cart.added{background:var(--yellow);color:#000}
+    .btn-buy{background:#1a1a2e;color:#fff;border:none;border-radius:10px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;width:100%}
+    .btn-buy:hover{background:#2d2d4e;transform:translateY(-1px)}
+    .btn-wish{background:var(--white);color:var(--text);border:1.5px solid var(--border);border-radius:10px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-wish:hover{border-color:var(--red);color:var(--red)}
+
+    /* DELIVERY */
+    .delivery-options{margin-bottom:16px}
+    .delivery-title{font-size:13px;font-weight:700;margin-bottom:8px}
+    .delivery-opt{border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+    .delivery-opt:hover{border-color:var(--green)}
+    .delivery-opt.active{border-color:var(--green);background:#f0faf5}
+    .delivery-opt .d-icon{font-size:20px;flex-shrink:0}
+    .delivery-opt .d-text strong{display:block;font-size:13px;font-weight:600}
+    .delivery-opt .d-text span{font-size:12px;color:var(--muted)}
+    .delivery-opt .d-price{margin-left:auto;font-weight:700;font-size:13px;color:var(--green)}
+
+    /* TRUST */
+    .trust-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+    .trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+    .trust-item .t-icon{font-size:18px;flex-shrink:0}
+
+    /* SIDEBAR BUY BOX */
+    .buy-box{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;position:sticky;top:88px}
+    .buy-box-price{font-size:1.8rem;font-weight:800;margin-bottom:4px}
+    .buy-box-old{font-size:13px;color:var(--muted);text-decoration:line-through;margin-bottom:12px}
+    .buy-box-stock{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+    .buy-box-delivery{background:#f0faf5;border:1px solid #d1fae5;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);font-weight:600;margin-bottom:14px}
+    .buy-box-delivery span{color:var(--muted);font-weight:400}
+    .buy-box .btn-cart{margin-bottom:8px}
+    .buy-box .btn-buy{margin-bottom:12px}
+    .buy-box-trust{font-size:11px;color:var(--muted);text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+
+    /* TABS */
+    .tabs-section{margin-top:32px}
+    .tab-btns{display:flex;gap:0;border-bottom:2px solid var(--border)}
+    .tab-btn{padding:12px 20px;background:none;border:none;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;transition:all .15s}
+    .tab-btn.active{color:var(--green);border-bottom-color:var(--green)}
+    .tab-content{display:none;padding-top:24px}
+    .tab-content.active{display:block}
+
+    /* REVIEWS */
+    .review-summary{display:flex;gap:32px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+    .big-score{text-align:center}
+    .big-score .num{font-size:3.5rem;font-weight:800;line-height:1}
+    .big-score .stars-big{font-size:22px;color:var(--yellow2)}
+    .big-score .total{font-size:13px;color:var(--muted)}
+    .bars{flex:1;min-width:200px}
+    .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+    .bar-row .star-lbl{width:30px;color:var(--muted)}
+    .bar-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+    .bar-fill{height:100%;background:var(--yellow2);border-radius:4px}
+    .bar-pct{width:30px;color:var(--muted);text-align:right}
+    .review-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px}
+    .reviewer{display:flex;justify-content:space-between;margin-bottom:8px}
+    .reviewer-name{font-weight:700;font-size:14px}
+    .reviewer-date{font-size:12px;color:var(--muted)}
+    .review-stars{color:var(--yellow2);font-size:16px;margin-bottom:8px}
+    .review-text{font-size:14px;line-height:1.7;color:var(--text)}
+    .review-helpful{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+    .review-helpful button{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;transition:background .15s}
+    .review-helpful button:hover{background:var(--border)}
+    .verified-purchase{background:#f0faf5;color:var(--green);font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;margin-left:8px}
+
+    /* RELATED */
+    .related-section{margin-top:40px}
+    .section-title{font-size:1.3rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--green);border-radius:2px}
+    .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+    .rel-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+    .rel-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px)}
+    .rel-img{background:#f8fafc;height:140px;display:flex;align-items:center;justify-content:center;font-size:52px}
+    .rel-body{padding:12px}
+    .rel-shop{font-size:11px;color:var(--muted)}
+    .rel-name{font-size:13px;font-weight:600;margin:4px 0}
+    .rel-price{font-size:14px;font-weight:800;color:var(--text)}
+
+    /* URGENCY TOAST */
+    .urgency-toast{position:fixed;bottom:24px;left:24px;background:var(--white);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.15);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;z-index:999;transform:translateX(-120%);transition:transform .4s cubic-bezier(0.34,1.56,0.64,1);max-width:280px;border-left:4px solid var(--green)}
+    .urgency-toast.show{transform:translateX(0)}
+    .toast-icon{font-size:24px;flex-shrink:0}
+    .toast-text strong{display:block;font-weight:700;color:var(--text);font-size:13px}
+    .toast-text span{color:var(--muted);font-size:12px}
+
+    /* FOOTER */
+    footer{background:var(--text);color:#9ca3af;padding:24px 20px;margin-top:48px;text-align:center;font-size:13px}
+    footer a{color:var(--yellow);text-decoration:none}
+
+    @media(max-width:1024px){.product-layout{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.product-layout{grid-template-columns:1fr}.buy-box{position:static}.trust-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="urgency-toast" id="toast">
+  <div class="toast-icon" id="t-icon">🛒</div>
+  <div class="toast-text">
+    <strong id="t-title">Iemand in Paramaribo</strong>
+    <span id="t-sub">kocht dit 3 minuten geleden</span>
+  </div>
+</div>
+
+<div class="topbar">🚚 Gratis bezorging boven SRD 200 &nbsp;|&nbsp; <span>Vandaag besteld = morgen in huis</span> &nbsp;|&nbsp; 🇸🇷 Heel Suriname</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Bay<em>Sani</em><span>.com</span></a>
+    <div class="search-wrap">
+      <input type="text" placeholder="Zoek in heel Suriname..."/>
+      <button>🔍</button>
+    </div>
+    <div class="nav-actions">
+      <a href="#" class="nav-btn"><span class="icon">👤</span><span>Inloggen</span></a>
+      <a href="#" class="nav-btn"><span class="icon cart-icon" data-count="0" id="cart-icon">🛒</span><span>Winkelwagen</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="breadcrumb">
+  <a href="index.html">🏠 Home</a><span class="sep">›</span>
+  <a href="#">Sport</a><span class="sep">›</span>
+  <a href="#">Schoenen</a><span class="sep">›</span>
+  <span>Nike Air Max 270</span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- URGENCY TOP BANNER -->
+  <div class="urgency-banner">
+    <div class="fire">⚡</div>
+    <div class="urgency-text">
+      <strong>Flash deal — 19% korting, vandaag alleen!</strong>
+      <span>Aanbieding eindigt over:</span>
+    </div>
+    <div class="urgency-timer">
+      <div class="t-block"><div class="t-num" id="t-h">08</div><div class="t-lbl">uur</div></div>
+      <div class="t-block"><div class="t-num" id="t-m">24</div><div class="t-lbl">min</div></div>
+      <div class="t-block"><div class="t-num" id="t-s">00</div><div class="t-lbl">sec</div></div>
+    </div>
+  </div>
+
+  <div class="product-layout">
+
+    <!-- GALLERY -->
+    <div class="gallery">
+      <div class="main-img">
+        <div class="img-badges">
+          <span class="img-badge red">-19%</span>
+          <span class="img-badge green">NIEUW</span>
+        </div>
+        <span id="mainEmoji">👟</span>
+        <button class="wishlist-fab" onclick="toggleWish(this)" title="Verlanglijstje">🤍</button>
+      </div>
+      <div class="thumbs">
+        <div class="thumb active" onclick="setImg(this,'👟')">👟</div>
+        <div class="thumb" onclick="setImg(this,'🔵')">🔵</div>
+        <div class="thumb" onclick="setImg(this,'⚫')">⚫</div>
+        <div class="thumb" onclick="setImg(this,'🔴')">🔴</div>
+      </div>
+      <div class="share-row">
+        <button class="share-btn">📤 Delen</button>
+        <button class="share-btn">💬 WhatsApp</button>
+        <button class="share-btn">🔗 Kopieer link</button>
+      </div>
+    </div>
+
+    <!-- PRODUCT INFO -->
+    <div class="product-info">
+      <div class="shop-line">
+        <a href="#tab-winkel" class="shop-link" onclick="openTab('winkel')">🏪 SportZone Paramaribo</a>
+        <span class="verified-badge">✓ Geverifieerd</span>
+        <span class="shop-stars">★★★★★ 4.8</span>
+      </div>
+
+      <h1>Nike Air Max 270 — Zwart/Wit</h1>
+
+      <div class="rating-row">
+        <span class="stars-big">★★★★★</span>
+        <span class="rating-num">4.8</span>
+        <a href="#tab-recensies" class="review-link" onclick="openTab('recensies')">247 recensies</a>
+        <span class="sold-badge">🔥 1.2k+ verkocht</span>
+      </div>
+
+      <!-- PRICE -->
+      <div class="price-block">
+        <div class="price-row">
+          <span class="price-main">SRD 850</span>
+          <span class="price-old">SRD 1.050</span>
+          <span class="price-save">-19%</span>
+        </div>
+        <div class="price-sub">Je spaart <span>SRD 200</span> met deze deal</div>
+      </div>
+
+      <!-- STOCK BAR -->
+      <div class="stock-block">
+        <div class="stock-top">
+          <span class="stock-warn">🔥 Bijna uitverkocht!</span>
+          <span class="stock-num">Nog 7 op voorraad</span>
+        </div>
+        <div class="stock-bar"><div class="stock-fill" style="width:15%"></div></div>
+      </div>
+
+      <!-- LIVE SOCIAL PROOF -->
+      <div class="live-proof">
+        <div class="live-dot"></div>
+        <span><strong id="viewer-count">18</strong> mensen bekijken dit product op dit moment</span>
+      </div>
+
+      <hr class="divider"/>
+
+      <!-- SIZE -->
+      <div class="variant-label">Maat — <strong id="selectedSize">41</strong></div>
+      <div class="size-grid">
+        <button class="size-btn out" disabled>38</button>
+        <button class="size-btn out" disabled>39</button>
+        <button class="size-btn" onclick="selectSize(this,'40')">40</button>
+        <button class="size-btn active" onclick="selectSize(this,'41')">41</button>
+        <button class="size-btn" onclick="selectSize(this,'42')">42</button>
+        <button class="size-btn" onclick="selectSize(this,'43')">43</button>
+        <button class="size-btn out" disabled>44</button>
+        <button class="size-btn" onclick="selectSize(this,'45')">45</button>
+      </div>
+
+      <!-- COLOR -->
+      <div class="variant-label">Kleur — <strong id="selectedColor">Zwart/Wit</strong></div>
+      <div class="color-row">
+        <div class="color-dot active" style="background:#1a1a2e" onclick="selectColor(this,'Zwart/Wit')" title="Zwart/Wit"></div>
+        <div class="color-dot" style="background:#fff;border:2px solid #e5e7eb" onclick="selectColor(this,'Wit')" title="Wit"></div>
+        <div class="color-dot" style="background:#2563eb" onclick="selectColor(this,'Blauw')" title="Blauw"></div>
+        <div class="color-dot" style="background:#dc2626" onclick="selectColor(this,'Rood')" title="Rood"></div>
+        <div class="color-dot" style="background:#16a34a" onclick="selectColor(this,'Groen')" title="Groen"></div>
+      </div>
+
+      <!-- QTY -->
+      <div class="qty-row">
+        <span class="qty-label">Aantal:</span>
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-num" id="qtyNum">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-stack">
+        <button class="btn-cart" id="cartBtn" onclick="addToCart(this)">🛒 Voeg toe aan winkelwagen</button>
+        <button class="btn-buy" onclick="buyNow()">⚡ Nu direct bestellen</button>
+        <button class="btn-wish" onclick="toggleWishList(this)">🤍 Voeg toe aan verlanglijstje</button>
+      </div>
+
+      <!-- DELIVERY -->
+      <div class="delivery-options">
+        <div class="delivery-title">📦 Bezorging & Afhalen</div>
+        <div class="delivery-opt active" onclick="selectDelivery(this)">
+          <span class="d-icon">🚚</span>
+          <div class="d-text"><strong>Bezorging aan huis</strong><span>Morgen in huis — heel Suriname</span></div>
+          <span class="d-price">SRD 25</span>
+        </div>
+        <div class="delivery-opt" onclick="selectDelivery(this)">
+          <span class="d-icon">🏪</span>
+          <div class="d-text"><strong>Afhalen bij winkel</strong><span>Vandaag klaar · Domineestraat 42, PBX</span></div>
+          <span class="d-price">Gratis</span>
+        </div>
+        <div class="delivery-opt" onclick="selectDelivery(this)">
+          <span class="d-icon">🏢</span>
+          <div class="d-text"><strong>Afhaalpunt</strong><span>10 locaties in Paramaribo</span></div>
+          <span class="d-price">SRD 10</span>
+        </div>
+      </div>
+
+      <!-- TRUST -->
+      <div class="trust-row">
+        <div class="trust-item"><span class="t-icon">🔒</span><span>Veilig betalen — Visa, MC, Mopé</span></div>
+        <div class="trust-item"><span class="t-icon">↩️</span><span>30 dagen gratis retour</span></div>
+        <div class="trust-item"><span class="t-icon">✅</span><span>100% authentiek product</span></div>
+        <div class="trust-item"><span class="t-icon">💬</span><span>Klantenservice 8:00–20:00</span></div>
+      </div>
+    </div>
+
+    <!-- BUY BOX SIDEBAR -->
+    <div class="buy-box">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Jouw prijs vandaag:</div>
+      <div class="buy-box-price">SRD 850</div>
+      <div class="buy-box-old">Normaal: SRD 1.050 &nbsp; <span style="color:var(--red);font-weight:700">-19%</span></div>
+
+      <div class="buy-box-stock">⚠️ Nog maar 7 stuks beschikbaar!</div>
+      <div class="buy-box-delivery">🚚 Bezorging morgen <span>— Bestel binnen <strong id="countdown-text">5:23</strong></span></div>
+
+      <div style="margin-bottom:12px">
+        <div class="delivery-title" style="font-size:12px;margin-bottom:6px">Maat: <strong id="box-size">41</strong> &nbsp; Kleur: <strong id="box-color">Zwart/Wit</strong></div>
+      </div>
+
+      <button class="btn-cart" style="margin-bottom:8px" onclick="addToCart(document.getElementById('cartBtn'))">🛒 In winkelwagen</button>
+      <button class="btn-buy" style="margin-bottom:14px" onclick="buyNow()">⚡ Direct bestellen</button>
+
+      <div class="buy-box-trust">🔒 Beveiligde betaling &nbsp;·&nbsp; ↩️ 30d retour</div>
+
+      <hr class="divider"/>
+      <div style="font-size:12px;color:var(--muted)">
+        <div style="margin-bottom:6px">🏪 <strong>SportZone Paramaribo</strong></div>
+        <div>★★★★★ 4.8 · 312 reviews · Lid sinds 2024</div>
+        <a href="#" style="color:var(--green);font-size:12px;font-weight:600;text-decoration:none;display:block;margin-top:8px">Alle producten van deze winkel →</a>
+      </div>
+    </div>
+
+  </div><!-- /product-layout -->
+
+  <!-- TABS -->
+  <div class="tabs-section">
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="openTab('beschrijving',this)">📋 Beschrijving</button>
+      <button class="tab-btn" onclick="openTab('recensies',this)">⭐ Recensies (247)</button>
+      <button class="tab-btn" onclick="openTab('winkel',this)">🏪 Over de winkel</button>
+      <button class="tab-btn" onclick="openTab('retour',this)">↩️ Retour & Levering</button>
+    </div>
+
+    <!-- BESCHRIJVING -->
+    <div class="tab-content active" id="tab-beschrijving">
+      <div style="background:var(--white);border-radius:12px;padding:24px;border:1px solid var(--border);max-width:700px">
+        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:12px">Nike Air Max 270 — Zwart/Wit</h3>
+        <p style="font-size:14px;line-height:1.8;color:var(--muted);margin-bottom:16px">De Nike Air Max 270 combineert stijl en comfort op een unieke manier. Met de grootste Air-eenheid ooit in een lifestyle sneaker biedt dit model maximale demping voor de hele dag draagcomfort.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Merk</strong><br>Nike</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Model</strong><br>Air Max 270</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Materiaal</strong><br>Mesh + synthetisch</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Zool</strong><br>Air Max unit</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Geslacht</strong><br>Unisex</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:13px"><strong>Garantie</strong><br>6 maanden</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENSIES -->
+    <div class="tab-content" id="tab-recensies">
+      <div class="review-summary">
+        <div class="big-score">
+          <div class="num">4.8</div>
+          <div class="stars-big">★★★★★</div>
+          <div class="total">247 recensies</div>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><span class="star-lbl">5 ★</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span class="bar-pct">78%</span></div>
+          <div class="bar-row"><span class="star-lbl">4 ★</span><div class="bar-track"><div class="bar-fill" style="width:13%"></div></div><span class="bar-pct">13%</span></div>
+          <div class="bar-row"><span class="star-lbl">3 ★</span><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><span class="bar-pct">6%</span></div>
+          <div class="bar-row"><span class="star-lbl">2 ★</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-pct">2%</span></div>
+          <div class="bar-row"><span class="star-lbl">1 ★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-pct">1%</span></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="reviewer"><span class="reviewer-name">Shanti M. <span class="verified-purchase">✓ Geverifieerde aankoop</span></span><span class="reviewer-date">12 maart 2025</span></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Super mooie sneakers! Snel geleverd en exact zoals beschreven. De kwaliteit is top en zitten heel comfortabel. Zeker aanrader voor iedereen in Paramaribo!</div>
+        <div class="review-helpful">Was dit nuttig? <button>👍 Ja (14)</button><button>👎 Nee (1)</button></div>
+      </div>
+      <div class="review-card">
+        <div class="reviewer"><span class="reviewer-name">Kevin J. <span class="verified-purchase">✓ Geverifieerde aankoop</span></span><span class="reviewer-date">5 februari 2025</span></div>
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">Goede schoen, valt iets klein uit. Bestel een halve maat groter dan normaal. Bezorging naar Wanica was snel, binnen 2 dagen thuis.</div>
+        <div class="review-helpful">Was dit nuttig? <button>👍 Ja (8)</button><button>👎 Nee (0)</button></div>
+      </div>
+      <div class="review-card">
+        <div class="reviewer"><span class="reviewer-name">Priya R. <span class="verified-purchase">✓ Geverifieerde aankoop</span></span><span class="reviewer-date">20 januari 2025</span></div>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">Eindelijk een betrouwbaar platform in Suriname! Besteld, betaald via Mopé, en de volgende dag afgehaald bij de winkel. Ik ga zeker vaker bestellen via BaySani!</div>
+        <div class="review-helpful">Was dit nuttig? <button>👍 Ja (22)</button><button>👎 Nee (0)</button></div>
+      </div>
+    </div>
+
+    <!-- WINKEL -->
+    <div class="tab-content" id="tab-winkel">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px">
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px">
+          <div style="width:72px;height:72px;background:linear-gradient(135deg,var(--green),var(--green2));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">🏪</div>
+          <div>
+            <h3 style="font-size:1.1rem;font-weight:700">SportZone Paramaribo</h3>
+            <div style="color:var(--yellow2);font-size:14px">★★★★★ 4.8 <span style="color:var(--muted)">(312 reviews)</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">📍 Domineestraat 42, Paramaribo · Lid sinds 2024</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin-bottom:16px">
+          <div style="background:var(--bg);border-radius:10px;padding:14px"><div style="font-size:1.4rem;font-weight:800">284</div><div style="font-size:12px;color:var(--muted)">Producten</div></div>
+          <div style="background:var(--bg);border-radius:10px;padding:14px"><div style="font-size:1.4rem;font-weight:800">98%</div><div style="font-size:12px;color:var(--muted)">Positieve reviews</div></div>
+          <div style="background:var(--bg);border-radius:10px;padding:14px"><div style="font-size:1.4rem;font-weight:800">&lt;2u</div><div style="font-size:12px;color:var(--muted)">Reactietijd</div></div>
+        </div>
+        <a href="#" style="color:var(--green);font-weight:600;font-size:13px;text-decoration:none">Bekijk alle producten van SportZone →</a>
+      </div>
+    </div>
+
+    <!-- RETOUR -->
+    <div class="tab-content" id="tab-retour">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px">📦 Leveringsinformatie</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
+          <div style="display:flex;gap:12px"><span style="font-size:20px">🚚</span><div><strong>Bezorging aan huis</strong> — SRD 25<br><span style="color:var(--muted)">Morgen in huis in Paramaribo, 2-3 dagen voor andere districten</span></div></div>
+          <div style="display:flex;gap:12px"><span style="font-size:20px">🏪</span><div><strong>Afhalen bij winkel</strong> — Gratis<br><span style="color:var(--muted)">Vandaag klaar, Domineestraat 42 Paramaribo</span></div></div>
+          <div style="display:flex;gap:12px"><span style="font-size:20px">↩️</span><div><strong>Gratis retour</strong> — 30 dagen<br><span style="color:var(--muted)">Ongedragen, originele verpakking vereist</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELATED PRODUCTS -->
+  <div class="related-section">
+    <div class="section-title">Vergelijkbare producten</div>
+    <div class="related-grid">
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Nike Air Force 1 — Wit</div><div class="rel-price">SRD 720</div></div></div>
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">Adidas Stan Smith</div><div class="rel-price">SRD 680</div></div></div>
+      <div class="rel-card"><div class="rel-img">🥿</div><div class="rel-body"><div class="rel-shop">🏪 Bags & More</div><div class="rel-name">Puma Suede Classic</div><div class="rel-price">SRD 540</div></div></div>
+      <div class="rel-card"><div class="rel-img">👟</div><div class="rel-body"><div class="rel-shop">🏪 SportZone</div><div class="rel-name">New Balance 574</div><div class="rel-price">SRD 760</div></div></div>
+      <div class="rel-card"><div class="rel-img">🥾</div><div class="rel-body"><div class="rel-shop">🏪 OutdoorSuri</div><div class="rel-name">Timberland 6-Inch Boot</div><div class="rel-price">SRD 1.200</div></div></div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <p>© 2025 <a href="index.html">BaySani.com</a> — Gemaakt met ❤️ voor Suriname &nbsp;|&nbsp; <a href="#">Voorwaarden</a> &nbsp;|&nbsp; <a href="#">Privacy</a></p>
+</footer>
+
+<script>
+var qty = 1, cartCount = 0;
+
+// Countdown timer
+function startTimer() {
+  var now = new Date();
+  var end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  function tick() {
+    var diff = end - new Date();
+    if (diff < 0) return;
+    document.getElementById('t-h').textContent = String(Math.floor(diff/3600000)).padStart(2,'0');
+    document.getElementById('t-m').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    document.getElementById('t-s').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+// Delivery countdown (bestel voor X uur)
+function deliveryCountdown() {
+  var now = new Date();
+  var cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
+  if (now > cutoff) cutoff.setDate(cutoff.getDate()+1);
+  function tick() {
+    var diff = cutoff - new Date();
+    var h = Math.floor(diff/3600000);
+    var m = Math.floor((diff%3600000)/60000);
+    var el = document.getElementById('countdown-text');
+    if (el) el.textContent = h + 'u ' + String(m).padStart(2,'0') + 'm';
+  }
+  tick(); setInterval(tick, 60000);
+}
+
+// Live viewers fluctuate
+function liveViewers() {
+  var base = 18;
+  setInterval(function() {
+    base = Math.max(8, Math.min(35, base + (Math.random() > 0.5 ? 1 : -1)));
+    var el = document.getElementById('viewer-count');
+    if (el) el.textContent = base;
+  }, 4000);
+}
+
+function changeQty(d) {
+  qty = Math.max(1, Math.min(8, qty + d));
+  document.getElementById('qtyNum').textContent = qty;
+}
+
+function selectSize(btn, size) {
+  document.querySelectorAll('.size-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('selectedSize').textContent = size;
+  var box = document.getElementById('box-size');
+  if (box) box.textContent = size;
+}
+
+function selectColor(dot, color) {
+  document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('active'); });
+  dot.classList.add('active');
+  document.getElementById('selectedColor').textContent = color;
+  var box = document.getElementById('box-color');
+  if (box) box.textContent = color;
+}
+
+function setImg(thumb, emoji) {
+  document.querySelectorAll('.thumb').forEach(function(t) { t.classList.remove('active'); });
+  thumb.classList.add('active');
+  document.getElementById('mainEmoji').textContent = emoji;
+}
+
+function selectDelivery(el) {
+  document.querySelectorAll('.delivery-opt').forEach(function(o) { o.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+function addToCart(btn) {
+  var orig = btn.innerHTML;
+  btn.innerHTML = '✅ Toegevoegd aan winkelwagen!';
+  btn.classList.add('added');
+  cartCount += qty;
+  document.getElementById('cart-icon').setAttribute('data-count', cartCount);
+  setTimeout(function() {
+    btn.innerHTML = orig;
+    btn.classList.remove('added');
+  }, 2000);
+}
+
+function buyNow() {
+  window.location.href = 'checkout.html';
+}
+
+function toggleWish(btn) {
+  btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+}
+function toggleWishList(btn) {
+  var isWish = btn.textContent.includes('🤍');
+  btn.innerHTML = isWish ? '❤️ Op verlanglijstje!' : '🤍 Voeg toe aan verlanglijstje';
+}
+
+function openTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  var el = document.getElementById('tab-'+id);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.querySelector('.tabs-section').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Urgency toasts
+var toasts = [
+  {icon:'🛒', title:'Iemand in Paramaribo', sub:'kocht dit 3 minuten geleden'},
+  {icon:'👀', title:'18 mensen bekijken dit', sub:'product op dit moment'},
+  {icon:'⚡', title:'Nog maar 7 op voorraad', sub:'Populair item — bestel snel!'},
+  {icon:'🎉', title:'Priya R. uit Nickerie', sub:'spaarde SRD 200 op dit product'},
+  {icon:'🚚', title:'Bezorging morgen', sub:'Als je nu bestelt — heel Suriname'},
+];
+var toastIdx = 0;
+function showToast() {
+  var msg = toasts[toastIdx % toasts.length]; toastIdx++;
+  var t = document.getElementById('toast');
+  document.getElementById('t-icon').textContent = msg.icon;
+  document.getElementById('t-title').textContent = msg.title;
+  document.getElementById('t-sub').textContent = msg.sub;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 4500);
+}
+setTimeout(function() { showToast(); setInterval(showToast, 10000); }, 4000);
+
+// Init
+startTimer();
+deliveryCountdown();
+liveViewers();
+document.getElementById('selectedSize').textContent = '41';
+</script>
+</body>
+</html>
